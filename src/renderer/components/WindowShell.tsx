@@ -32,7 +32,7 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
         WebkitBackdropFilter: 'blur(20px) saturate(1.2)',
         border: '0.5px solid rgba(255, 255, 255, 0.12)',
         borderRadius: 'var(--radius-window)',
-        boxShadow: 'var(--shadow-window), 0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.06) inset',
+        boxShadow: '0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.06) inset',
         willChange: 'transform, opacity',
         overflow: 'hidden',
         width: '100%',

@@ -71,7 +71,8 @@ export default function GlassCanvasApp() {
     return () => { unsubs.forEach((fn) => fn()); };
   }, []);
 
-  // ── Window resize ──
+  // ── Window resize: IDLE compact, conversation fluid ──
+  const contentRef = useRef<HTMLDivElement>(null);
   const prevStateRef = useRef(state);
 
   useEffect(() => {
@@ -83,31 +84,28 @@ export default function GlassCanvasApp() {
       return;
     }
 
+    // Initial expansion when leaving IDLE
     if (prev === 'empty') {
-      window.electronAPI?.resizeChat?.(480, 200);
+      window.electronAPI?.resizeChat?.(480, 300);
     }
 
-    if (state === 'streaming') {
-      let raf: number;
-      const measure = () => {
-        const contentH = document.documentElement.scrollHeight;
-        const windowH = window.innerHeight;
-        if (contentH > windowH - 30) {
-          const newH = Math.min(contentH + 40, Math.round(window.screen.availHeight * 0.75));
-          window.electronAPI?.resizeChat?.(480, newH);
-        }
-        raf = requestAnimationFrame(measure);
-      };
-      raf = requestAnimationFrame(() => {
-        raf = requestAnimationFrame(measure);
+    // Use ResizeObserver to grow window as content grows
+    if (state === 'streaming' && contentRef.current) {
+      const el = contentRef.current;
+      const observer = new ResizeObserver(() => {
+        const contentH = el.scrollHeight;
+        const newH = Math.min(contentH + 60, Math.round(window.screen.availHeight * 0.75));
+        window.electronAPI?.resizeChat?.(480, newH);
       });
-      return () => cancelAnimationFrame(raf);
+      observer.observe(el);
+      return () => observer.disconnect();
     }
 
+    // Final resize when done
     if (state === 'done' || state === 'error') {
-      const contentH = document.documentElement.scrollHeight;
-      const newH = Math.min(contentH + 40, Math.round(window.screen.availHeight * 0.75));
-      window.electronAPI?.resizeChat?.(480, Math.max(200, newH));
+      const contentH = contentRef.current?.scrollHeight || document.documentElement.scrollHeight;
+      const newH = Math.min(contentH + 60, Math.round(window.screen.availHeight * 0.75));
+      window.electronAPI?.resizeChat?.(480, Math.max(300, newH));
     }
   }, [state]);
 
@@ -194,6 +192,7 @@ export default function GlassCanvasApp() {
             {(state === 'streaming' || state === 'done') && messages.length > 0 && (
               <motion.div
                 key="conversation"
+                ref={contentRef}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}

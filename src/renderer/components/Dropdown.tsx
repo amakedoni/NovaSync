@@ -96,10 +96,11 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
     minWidth: 155,
     borderRadius: 14,
     padding: 4,
-    background: 'rgba(44, 44, 46, 0.96)',
+    background: 'rgba(44, 44, 46, 0.85)',
     border: '0.5px solid rgba(255, 255, 255, 0.12)',
     boxShadow: '0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04) inset',
-    backdropFilter: 'blur(20px)',
+    backdropFilter: 'blur(20px) saturate(1.2)',
+    WebkitBackdropFilter: 'blur(20px) saturate(1.2)',
     zIndex: 9999,
   }), [side]);
 

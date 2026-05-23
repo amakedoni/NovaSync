@@ -164,6 +164,7 @@ function Dropdown({ items, selected, onSelect, side = 'right' }: DropdownProps) 
             transition={spring}
             style={menuStyle}
             role="listbox"
+            aria-label={`${current?.label || selected} options`}
           >
             {items.map((item, idx) => {
               const isSelected = item.id === selected;

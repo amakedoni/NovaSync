@@ -58,6 +58,15 @@ export default function GlassCanvasApp() {
     return () => { unsubs.forEach((fn) => fn()); };
   }, []);
 
+  // ── Resize window on state change ──
+  useEffect(() => {
+    if (state === 'empty') {
+      window.electronAPI?.resizeChat?.(520, 240);
+    } else {
+      window.electronAPI?.resizeChat?.(520, 550);
+    }
+  }, [state]);
+
   // ── Keyboard ──
   useEffect(() => {
     const h = (e: KeyboardEvent) => {

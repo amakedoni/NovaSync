@@ -1,5 +1,5 @@
 import { ipcMain, clipboard, shell } from 'electron';
-import { getChatWindow, showChatWindow, hideChatWindow } from '../windows/overlay';
+import { getChatWindow, showChatWindow, hideChatWindow, resizeChatWindow } from '../windows/overlay';
 import { showHistoryWindow, hideHistoryWindow } from '../windows/response';
 import { streamChat } from '../services/llm-client';
 import {
@@ -16,6 +16,10 @@ import {
 export function registerIpcHandlers(): void {
   // ── Chat controls ─────────────────────────────
   ipcMain.on('chat:hide', () => hideChatWindow());
+
+  ipcMain.on('chat:resize', (_event, size: { width: number; height: number }) => {
+    resizeChatWindow(size.width, size.height);
+  });
 
   ipcMain.on('chat:ready', () => {
     // Chat window is loaded and ready

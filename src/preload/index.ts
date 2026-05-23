@@ -8,6 +8,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   hideChat: () => ipcRenderer.send('chat:hide'),
 
+  resizeChat: (width: number, height: number) =>
+    ipcRenderer.send('chat:resize', { width, height }),
+
   chatReady: () => ipcRenderer.send('chat:ready'),
 
   onChatOpened: (callback: () => void) => {

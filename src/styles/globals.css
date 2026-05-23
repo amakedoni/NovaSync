@@ -1,6 +1,4 @@
-@import "tailwindcss";
-
-/* ── NovaSync Design Tokens — Soft/Organic Palette ── */
+/* ── NovaSync Design Tokens — macOS System + Liquid Glass ── */
 
 :root {
   /* ── macOS System + Liquid Glass Palette ── */
@@ -250,11 +248,18 @@ button:focus-visible {
 button {
   font-family: inherit;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  will-change: transform;
 }
 
 input {
   font-family: inherit;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* ── Animated elements ────────────────────────────── */
+.motion-div,
+[style*="will-change"] {
+  will-change: transform, opacity;
 }
 
 button:disabled {

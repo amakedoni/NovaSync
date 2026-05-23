@@ -15,10 +15,13 @@ const MODELS = [
   { id: 'claude-haiku-4-5', label: 'Claude Haiku 4.5' },
 ];
 
+const morphSpring = { type: 'spring' as const, stiffness: 200, damping: 24 };
+
 export default function GlassCanvasApp() {
   const [query, setQuery] = useState('');
   const [needsKey, setNeedsKey] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [shimmerKey, setShimmerKey] = useState(0);
 
   const state = useChatStore((s) => s.state);
   const model = useChatStore((s) => s.model);
@@ -33,9 +36,19 @@ export default function GlassCanvasApp() {
   const hasConversation = state !== 'empty';
   const isThinking = state === 'streaming' && messages.length > 0 && messages[messages.length - 1]?.role === 'user';
   const showError = state === 'error';
-
-  // Map chat states to HeaderBar states
   const headerState = state === 'empty' ? 'idle' : state;
+  const currentModelLabel = MODELS.find((m) => m.id === model)?.label || model;
+  const currentModeLabel = MODES.find((m) => m.id === mode)?.label || 'Chat';
+
+  // ── Trigger shimmer on state transitions ──
+  const prevStateRef2 = useRef(state);
+  useEffect(() => {
+    const prev = prevStateRef2.current;
+    prevStateRef2.current = state;
+    if (prev !== state && (prev === 'empty' || state === 'empty')) {
+      setShimmerKey((k) => k + 1);
+    }
+  }, [state]);
 
   // ── IPC ──
   useEffect(() => {
@@ -58,7 +71,7 @@ export default function GlassCanvasApp() {
     return () => { unsubs.forEach((fn) => fn()); };
   }, []);
 
-  // ── Window resize: IDLE → compact, conversation → grow with content ──
+  // ── Window resize ──
   const prevStateRef = useRef(state);
 
   useEffect(() => {
@@ -70,12 +83,10 @@ export default function GlassCanvasApp() {
       return;
     }
 
-    // Initial expansion when leaving IDLE
     if (prev === 'empty') {
       window.electronAPI?.resizeChat?.(480, 200);
     }
 
-    // During streaming: continuously grow window as content builds up
     if (state === 'streaming') {
       let raf: number;
       const measure = () => {
@@ -87,14 +98,12 @@ export default function GlassCanvasApp() {
         }
         raf = requestAnimationFrame(measure);
       };
-      // Double rAF — let React commit DOM before measuring
       raf = requestAnimationFrame(() => {
         raf = requestAnimationFrame(measure);
       });
       return () => cancelAnimationFrame(raf);
     }
 
-    // When done or error: one final resize to fit content
     if (state === 'done' || state === 'error') {
       const contentH = document.documentElement.scrollHeight;
       const newH = Math.min(contentH + 40, Math.round(window.screen.availHeight * 0.75));
@@ -148,9 +157,11 @@ export default function GlassCanvasApp() {
   return (
     <AnimatePresence>
       {visible && (
-        <WindowShell visible={visible}>
+        <WindowShell visible={visible} shimmerKey={shimmerKey}>
           <HeaderBar
             state={headerState}
+            modelLabel={currentModelLabel}
+            modeLabel={headerState !== 'idle' ? currentModeLabel : undefined}
             onNewChat={hasConversation ? newChat : undefined}
             onOpenHistory={() => window.electronAPI?.openHistory?.()}
             onClose={close}
@@ -164,7 +175,8 @@ export default function GlassCanvasApp() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.15 }}
+                transition={{ ...morphSpring, duration: undefined }}
+                style={{ willChange: 'transform, opacity' }}
               >
                 <IdleView
                   query={query}
@@ -185,8 +197,8 @@ export default function GlassCanvasApp() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
+                transition={{ ...morphSpring, duration: undefined }}
+                style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', willChange: 'transform, opacity' }}
               >
                 <ConversationView
                   isThinking={isThinking}
@@ -203,7 +215,7 @@ export default function GlassCanvasApp() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ ...morphSpring, duration: undefined }}
               >
                 <ErrorState message={errorMessage} onRetry={retry} />
               </motion.div>

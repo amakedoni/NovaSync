@@ -5,7 +5,7 @@ interface Props {
   children: ReactNode;
   visible: boolean;
   style?: React.CSSProperties;
-  onStateChange?: () => void;
+  shimmerKey?: number;
 }
 
 const spring = { type: 'spring' as const, stiffness: 200, damping: 24 };
@@ -16,17 +16,16 @@ interface Ripple {
   y: number;
 }
 
-export default function WindowShell({ children, visible, style }: Props) {
+export default function WindowShell({ children, visible, style, shimmerKey }: Props) {
   const [shimmer, setShimmer] = useState(false);
   const [ripples, setRipples] = useState<Ripple[]>([]);
-  let rippleId = 0;
 
-  // ── Edge shimmer on mount ──
+  // ── Edge shimmer on morph (shimmerKey change = state transition) ──
   useEffect(() => {
     setShimmer(true);
     const t = setTimeout(() => setShimmer(false), 600);
     return () => clearTimeout(t);
-  }, []);
+  }, [shimmerKey]);
 
   // ── Light ripple on click ──
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -45,13 +44,14 @@ export default function WindowShell({ children, visible, style }: Props) {
       transition={spring}
       onClick={handleClick}
       style={{
-        // Glass surface — actual blur for liquid glass effect
-        background: 'linear-gradient(135deg, rgba(38, 38, 40, 0.72) 0%, rgba(32, 32, 34, 0.75) 100%)',
-        backdropFilter: 'blur(24px) saturate(1.2)',
-        WebkitBackdropFilter: 'blur(24px) saturate(1.2)',
-        border: '0.5px solid rgba(255, 255, 255, 0.13)',
+        // Liquid glass — medium frost 55%, blur 20px, glow border
+        background: 'linear-gradient(135deg, rgba(38, 38, 40, 0.55) 0%, rgba(32, 32, 34, 0.55) 100%)',
+        backdropFilter: 'blur(20px) saturate(1.2)',
+        WebkitBackdropFilter: 'blur(20px) saturate(1.2)',
+        border: '0.5px solid rgba(255, 255, 255, 0.12)',
         borderRadius: 'var(--radius-window)',
-        boxShadow: '0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.06) inset',
+        boxShadow: 'var(--shadow-window), 0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.06) inset',
+        willChange: 'transform, opacity',
         overflow: 'hidden',
         width: '100%',
         minHeight: '100%',

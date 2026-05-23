@@ -55,6 +55,12 @@ export default function IdleView({
         <ModeSelector selected={mode} onSelect={onModeSelect} />
       </div>
 
+      {/* Hint */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.18)' }}>
+          Enter to send · Esc to close
+        </span>
+      </div>
     </div>
   );
 }

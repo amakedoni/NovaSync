@@ -38,194 +38,176 @@ export default function ChatBubble() {
 
   const hasConversation = state !== 'empty';
   const isThinking = state === 'streaming' && messages.length > 0 && messages[messages.length - 1]?.role === 'user';
-
   const showMessageList = (state === 'streaming' || state === 'done') && messages.length > 0;
-  const showActionBar = state === 'done' && messages.length > 0;
   const showError = state === 'error';
 
+  // ── IPC ──
   useEffect(() => {
     const unsubs: (() => void)[] = [];
-
     const r0 = window.electronAPI?.onChatOpened?.(() => { setVisible(true); setQuery(''); });
     if (r0) unsubs.push(r0);
-
     const r1 = window.electronAPI?.onResponseChunk?.((chunk: string) => { useChatStore.getState().appendChunk(chunk); });
     if (r1) unsubs.push(r1);
-
     const r2 = window.electronAPI?.onResponseDone?.((fullText: string) => { useChatStore.getState().finishResponse(fullText); });
     if (r2) unsubs.push(r2);
-
     const r3 = window.electronAPI?.onResponseError?.((err: string) => { useChatStore.getState().setError(err); });
     if (r3) unsubs.push(r3);
-
     const r4 = window.electronAPI?.onNeedApiKey?.(() => { setNeedsKey(true); });
     if (r4) unsubs.push(r4);
-
     const r5 = window.electronAPI?.onApiKeySaved?.(() => { setNeedsKey(false); });
     if (r5) unsubs.push(r5);
-
     const r6 = window.electronAPI?.onResponseReset?.(() => { useChatStore.getState().reset(); });
     if (r6) unsubs.push(r6);
-
     window.electronAPI?.chatReady?.();
-
     return () => { unsubs.forEach((fn) => fn()); };
   }, []);
 
+  // ── Keyboard ──
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setVisible(false); setTimeout(() => window.electronAPI?.hideChat?.(), 150); }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') { setVisible(false); setTimeout(() => window.electronAPI?.hideChat?.(), 150); } };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
   }, []);
 
-  const handleSubmit = useCallback(() => {
-    const trimmed = query.trim();
-    if (!trimmed) return;
-    addUserMessage(trimmed);
-    setQuery('');
-    window.electronAPI?.sendQuery({ query: trimmed, model });
+  // ── Handlers ──
+  const submit = useCallback(() => {
+    const t = query.trim(); if (!t) return;
+    addUserMessage(t); setQuery('');
+    window.electronAPI?.sendQuery({ query: t, model });
   }, [query, addUserMessage, model]);
 
-  const handleQuickAction = useCallback((action: QuickAction) => {
+  const quickAction = useCallback((a: QuickAction) => {
     const base = query.trim();
-    const prompt = base ? `${action.systemPrompt}\n\n${base}` : action.systemPrompt;
-    addUserMessage(prompt);
-    setQuery('');
-    window.electronAPI?.sendQuery({ query: prompt, model });
+    const p = base ? `${a.systemPrompt}\n\n${base}` : a.systemPrompt;
+    addUserMessage(p); setQuery('');
+    window.electronAPI?.sendQuery({ query: p, model });
   }, [query, addUserMessage, model]);
 
-  const handleRetry = useCallback(() => {
-    const msgs = useChatStore.getState().messages;
-    const lastUser = [...msgs].reverse().find((m) => m.role === 'user');
-    if (!lastUser) return;
+  const retry = useCallback(() => {
+    const u = [...useChatStore.getState().messages].reverse().find((m) => m.role === 'user');
+    if (!u) return;
     useChatStore.getState().setError('');
-    window.electronAPI?.sendQuery({ query: lastUser.content, model });
+    window.electronAPI?.sendQuery({ query: u.content, model });
   }, [model]);
 
-  const handleCopy = useCallback(() => {
-    const msgs = useChatStore.getState().messages;
-    const lastAssistant = [...msgs].reverse().find((m) => m.role === 'assistant');
-    if (!lastAssistant) return;
-    window.electronAPI?.copyToClipboard(lastAssistant.content);
+  const copy = useCallback(() => {
+    const a = [...useChatStore.getState().messages].reverse().find((m) => m.role === 'assistant');
+    if (a) window.electronAPI?.copyToClipboard(a.content);
   }, []);
 
-  const handleFollowUp = useCallback((text: string) => {
+  const followUp = useCallback((text: string) => {
     addUserMessage(text);
     window.electronAPI?.sendQuery({ query: text, model });
   }, [addUserMessage, model]);
 
-  const handleClose = useCallback(() => { setVisible(false); setTimeout(() => window.electronAPI?.hideChat?.(), 150); }, []);
-  const handleNewChat = useCallback(() => { reset(); setQuery(''); }, [reset]);
+  const close = useCallback(() => { setVisible(false); setTimeout(() => window.electronAPI?.hideChat?.(), 150); }, []);
+  const newChat = useCallback(() => { reset(); setQuery(''); }, [reset]);
 
   // ── API key setup ──
   if (needsKey) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.92, y: 12 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={springTransition}
-        style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-input)', borderRadius: 'var(--radius-window)', boxShadow: 'var(--shadow-window)', overflow: 'hidden', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
-      >
+      <motion.div initial={{ opacity: 0, scale: 0.92, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={springTransition}
+        style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-input)', borderRadius: 'var(--radius-window)', boxShadow: 'var(--shadow-window)', overflow: 'hidden', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <SettingsView onSaved={() => setNeedsKey(false)} />
       </motion.div>
     );
   }
 
-  // ── Main shell ──
+  // ── Shell ──
+  const shell: React.CSSProperties = {
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-input)',
+    borderRadius: 'var(--radius-window)',
+    boxShadow: 'var(--shadow-window)',
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  };
+
   return (
     <AnimatePresence>
       {visible && (
-        <motion.div
-          key="chat"
-          initial={{ opacity: 0, scale: 0.92, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.92, y: 12 }}
-          transition={springTransition}
-          style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-input)', borderRadius: 'var(--radius-window)', boxShadow: 'var(--shadow-window)', overflow: 'hidden', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
-        >
+        <motion.div key="chat" initial={{ opacity: 0, scale: 0.92, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.92, y: 12 }} transition={springTransition} style={shell}>
 
           {/* ═══ HEADER ═══ */}
-          <Header
-            onOpenHistory={() => window.electronAPI?.openHistory?.()}
-            onClose={handleClose}
-            onNewChat={hasConversation ? handleNewChat : undefined}
-          />
+          <Header onOpenHistory={() => window.electronAPI?.openHistory?.()} onClose={close} onNewChat={hasConversation ? newChat : undefined} />
 
-          {/* ═══ CONTENT (flex-1, NO overflow here — children handle their own scroll) ═══ */}
+          {/* ═══ CONTENT (flex-1, min-h-0 — children handle their own overflow) ═══ */}
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
 
-            {/* Empty state */}
+            {/* ── Empty: compact branding, centered ── */}
             {state === 'empty' && (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 20px' }}>
-                {/* Logo */}
-                <div style={{ width: 36, height: 36, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(124,58,237,0.08))', border: '1px solid rgba(167,139,250,0.12)' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(167,139,250,0.18), rgba(124,58,237,0.10))', border: '1px solid rgba(167,139,250,0.15)' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="var(--accent)" strokeWidth="1.5" />
                     <path d="M8 12l3 3 5-5" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
-                <span style={{ color: 'var(--accent)', fontSize: 13, fontWeight: 600 }}>NovaSync</span>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <QuickActions onAction={handleQuickAction} />
-                  <ModelSelector models={MODELS} selected={model} onSelect={setModel} />
-                </div>
+                <span style={{ color: 'var(--accent)', fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em' }}>NovaSync</span>
               </div>
             )}
 
-            {/* Message list (scrollable) */}
+            {/* ── Messages ── */}
             {showMessageList && <MessageList isThinking={isThinking} />}
 
-            {/* Thinking dots */}
+            {/* ── Thinking dots ── */}
             {isThinking && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px 10px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(167,139,250,0.2), rgba(124,58,237,0.1))', color: 'var(--accent)', fontSize: 10, fontWeight: 700 }}>N</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px 8px' }}>
+                <div style={{ width: 22, height: 22, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(167,139,250,0.20), rgba(124,58,237,0.10))', color: 'var(--accent)', fontSize: 10, fontWeight: 700 }}>N</div>
                 <div className="loading-dots"><span /><span /><span /></div>
               </div>
             )}
 
-            {/* Error */}
-            {showError && <ErrorState message={errorMessage} onRetry={handleRetry} />}
+            {/* ── Error ── */}
+            {showError && <ErrorState message={errorMessage} onRetry={retry} />}
           </div>
 
-          {/* ═══ BOTTOM BAR ═══ */}
-          {/* Empty state: InputBar */}
+          {/* ═══ BOTTOM ═══ */}
+
+          {/* Empty: QuickActions (2x2 grid) + ModelSelector + InputBar */}
           {state === 'empty' && (
-            <div style={{ padding: '4px 12px 12px', borderTop: '1px solid var(--border-subtle)' }}>
-              <InputBar value={query} onChange={setQuery} onSubmit={handleSubmit} autoFocus />
+            <div style={{ padding: '10px 14px 12px', borderTop: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <QuickActions onAction={quickAction} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <ModelSelector models={MODELS} selected={model} onSelect={setModel} />
+                <span style={{ color: 'var(--text-tertiary)', fontSize: 9, opacity: 0.6 }}>Esc to close</span>
+              </div>
+              <InputBar value={query} onChange={setQuery} onSubmit={submit} autoFocus />
             </div>
           )}
 
-          {/* Streaming: generating text + disabled InputBar */}
+          {/* Streaming thinking: disabled InputBar */}
+          {state === 'streaming' && isThinking && (
+            <div style={{ padding: '8px 12px 10px', borderTop: '1px solid var(--border-subtle)' }}>
+              <InputBar value={query} onChange={setQuery} onSubmit={submit} disabled />
+            </div>
+          )}
+
+          {/* Streaming receiving: generating + disabled InputBar */}
           {state === 'streaming' && !isThinking && (
             <div style={{ borderTop: '1px solid var(--border-subtle)' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0 2px' }}>
+              <div style={{ textAlign: 'center', padding: '3px 0 4px' }}>
                 <span style={{ color: 'var(--text-tertiary)', fontSize: 10 }}>generating...</span>
               </div>
               <div style={{ padding: '0 8px 8px' }}>
-                <InputBar value={query} onChange={setQuery} onSubmit={handleSubmit} disabled />
+                <InputBar value={query} onChange={setQuery} onSubmit={submit} disabled />
               </div>
-            </div>
-          )}
-
-          {/* Thinking state: just disabled InputBar */}
-          {state === 'streaming' && isThinking && (
-            <div style={{ borderTop: '1px solid var(--border-subtle)', padding: '4px 8px 8px' }}>
-              <InputBar value={query} onChange={setQuery} onSubmit={handleSubmit} disabled />
             </div>
           )}
 
           {/* Done: ActionBar */}
-          {showActionBar && (
-            <ActionBar onCopy={handleCopy} onRetry={handleRetry} onFollowUp={handleFollowUp} hasContent={messages.some((m) => m.role === 'assistant')} />
+          {state === 'done' && messages.length > 0 && (
+            <ActionBar onCopy={copy} onRetry={retry} onFollowUp={followUp} hasContent={messages.some((m) => m.role === 'assistant')} />
           )}
 
           {/* Error with conversation */}
           {showError && hasConversation && (
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '10px 12px', borderTop: '1px solid var(--border-subtle)' }}>
-              <button onClick={handleRetry} style={{ padding: '6px 16px', borderRadius: 20, fontSize: 11, fontWeight: 600, border: '1px solid rgba(167,139,250,0.25)', background: 'var(--surface-active)', color: 'var(--accent)', fontFamily: 'inherit', cursor: 'pointer' }}>Retry</button>
-              <button onClick={handleNewChat} style={{ padding: '6px 16px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: '1px solid var(--border-subtle)', background: 'var(--surface-hover)', color: 'var(--text-secondary)', fontFamily: 'inherit', cursor: 'pointer' }}>New Chat</button>
+              <button onClick={retry} style={{ padding: '6px 18px', borderRadius: 20, fontSize: 11, fontWeight: 600, border: '1px solid rgba(167,139,250,0.25)', background: 'var(--surface-active)', color: 'var(--accent)', cursor: 'pointer' }}>Retry</button>
+              <button onClick={newChat} style={{ padding: '6px 18px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: '1px solid var(--border-subtle)', background: 'var(--surface-hover)', color: 'var(--text-secondary)', cursor: 'pointer' }}>New Chat</button>
             </div>
           )}
         </motion.div>

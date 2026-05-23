@@ -14,20 +14,29 @@ interface Props {
   onAction: (action: QuickAction) => void;
 }
 
+const btnStyle: React.CSSProperties = {
+  background: 'var(--surface-hover)',
+  color: 'var(--text-secondary)',
+  border: '1px solid var(--border-subtle)',
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+  borderRadius: 20,
+  padding: '5px 12px',
+  fontSize: 10,
+  fontWeight: 500,
+  whiteSpace: 'nowrap',
+  transition: 'all 0.15s ease',
+};
+
 export default function QuickActions({ onAction }: Props) {
   return (
-    <div className="flex gap-1.5 flex-wrap">
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
       {ACTIONS.map((action) => (
         <button
           key={action.label}
           onClick={() => onAction(action)}
-          className="quick-action-btn px-2.5 py-1 rounded-full text-[10px] font-medium cursor-pointer border-none transition-all duration-150"
-          style={{
-            background: 'var(--surface-hover)',
-            color: 'var(--text-secondary)',
-            border: '1px solid var(--border-subtle)',
-            fontFamily: 'inherit',
-          }}
+          className="quick-action-btn"
+          style={btnStyle}
         >
           {action.label}
         </button>

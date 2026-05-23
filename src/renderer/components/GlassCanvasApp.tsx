@@ -88,25 +88,30 @@ export default function GlassCanvasApp() {
     }
   }, [state]);
 
-  // ── Grow window as messages accumulate during streaming ──
+  // ── Grow window gradually as messages accumulate during streaming ──
   useEffect(() => {
     if (state !== 'streaming') return;
 
-    // Measure after React commits DOM
     const raf = requestAnimationFrame(() => {
       const root = document.getElementById('root');
       if (!root) return;
       const contentH = root.scrollHeight;
-      const newH = Math.min(contentH + 60, Math.round(window.screen.availHeight * 0.75));
-      if (newH > window.innerHeight + 10) {
-        window.electronAPI?.resizeChat?.(480, newH);
+      const currentH = window.innerHeight;
+      const maxH = Math.round(window.screen.availHeight * 0.75);
+
+      // Content exceeds window — grow by small step (max 40px per tick)
+      if (contentH > currentH) {
+        const stepH = Math.min(currentH + 40, contentH + 20, maxH);
+        if (stepH > currentH + 10) {
+          window.electronAPI?.resizeChat?.(480, stepH);
+        }
       }
     });
 
     return () => cancelAnimationFrame(raf);
   }, [messages, state]);
 
-  // ── Final resize when done ──
+  // ── Final resize to fit all content when done ──
   useEffect(() => {
     if (state !== 'done' && state !== 'error') return;
 
@@ -114,8 +119,8 @@ export default function GlassCanvasApp() {
       const root = document.getElementById('root');
       if (!root) return;
       const contentH = root.scrollHeight;
-      const newH = Math.min(contentH + 60, Math.round(window.screen.availHeight * 0.75));
-      window.electronAPI?.resizeChat?.(480, Math.max(300, newH));
+      const maxH = Math.round(window.screen.availHeight * 0.75);
+      window.electronAPI?.resizeChat?.(480, Math.min(contentH + 40, maxH));
     });
   }, [state]);
 

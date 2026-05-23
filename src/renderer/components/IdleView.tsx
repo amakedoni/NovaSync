@@ -23,7 +23,7 @@ export default function IdleView({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        padding: '6px 18px 4px',
+        padding: '4px 18px 2px',
         position: 'relative',
         zIndex: 1,
         gap: 4,

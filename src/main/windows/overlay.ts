@@ -12,9 +12,9 @@ function getUrl(): string {
 export function createChatWindow(): BrowserWindow {
   chatWindow = new BrowserWindow({
     width: 480,
-    height: 90,
+    height: 85,
     minWidth: 360,
-    minHeight: 90,
+    minHeight: 80,
     transparent: true,
     frame: false,
     resizable: true,

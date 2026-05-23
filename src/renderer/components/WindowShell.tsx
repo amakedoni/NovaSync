@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState, useCallback } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface Props {
@@ -10,15 +10,8 @@ interface Props {
 
 const spring = { type: 'spring' as const, stiffness: 200, damping: 24 };
 
-interface Ripple {
-  id: number;
-  x: number;
-  y: number;
-}
-
 export default function WindowShell({ children, visible, style, shimmerKey }: Props) {
   const [shimmer, setShimmer] = useState(false);
-  const [ripples, setRipples] = useState<Ripple[]>([]);
 
   // ── Edge shimmer on morph (shimmerKey change = state transition) ──
   useEffect(() => {
@@ -27,22 +20,11 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
     return () => clearTimeout(t);
   }, [shimmerKey]);
 
-  // ── Light ripple on click ──
-  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const id = Date.now();
-    setRipples((prev) => [...prev, { id, x, y }]);
-    setTimeout(() => setRipples((prev) => prev.filter((r) => r.id !== id)), 600);
-  }, []);
-
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.92, y: 12 }}
       animate={visible ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 12 }}
       transition={spring}
-      onClick={handleClick}
       style={{
         // Liquid glass — medium frost 55%, blur 20px, glow border
         background: 'linear-gradient(135deg, rgba(38, 38, 40, 0.55) 0%, rgba(32, 32, 34, 0.55) 100%)',
@@ -54,7 +36,7 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
         willChange: 'transform, opacity',
         overflow: 'hidden',
         width: '100%',
-        minHeight: '100%',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
@@ -86,20 +68,6 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
           }} />
         </div>
       )}
-
-      {/* ── Light ripples ── */}
-      {ripples.map((r) => (
-        <div
-          key={r.id}
-          style={{
-            position: 'absolute', left: r.x, top: r.y,
-            width: 80, height: 80, marginLeft: -40, marginTop: -40,
-            borderRadius: '50%', pointerEvents: 'none', zIndex: 5,
-            background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%)',
-            animation: 'ripple-expand 0.6s ease-out forwards',
-          }}
-        />
-      ))}
 
       {children}
     </motion.div>

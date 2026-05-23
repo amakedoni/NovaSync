@@ -139,7 +139,7 @@ export default function ChatBubble() {
           {/* ═══ CONTENT (flex-1, min-h-0 — children handle their own overflow) ═══ */}
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
 
-            {/* ── Empty: logo + name + QuickActions, all vertically centered ── */}
+            {/* ── Empty: logo + name + QuickActions, vertically centered ── */}
             {state === 'empty' && (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 20px' }}>
                 <div style={{ width: 38, height: 38, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(167,139,250,0.18), rgba(124,58,237,0.10))', border: '1px solid rgba(167,139,250,0.15)' }}>

@@ -61,10 +61,17 @@ export default function ModelSelector({ models, selected, onSelect }: Props) {
 
       {open && (
         <div
-          className="absolute rounded-xl p-1 min-w-[150px] z-50"
           style={{
+            position: 'absolute',
             [dropUp ? 'bottom' : 'top']: 'calc(100% + 6px)',
             right: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            borderRadius: 14,
+            padding: 4,
+            minWidth: 160,
+            zIndex: 50,
             background: 'var(--bg-secondary)',
             border: '1px solid var(--border-input)',
             boxShadow: 'var(--shadow-dropdown)',
@@ -74,11 +81,25 @@ export default function ModelSelector({ models, selected, onSelect }: Props) {
             <button
               key={model.id}
               onClick={() => { onSelect(model.id); setOpen(false); }}
-              className="block w-full text-left px-3 py-2 rounded-lg text-xs border-none cursor-pointer transition-colors"
               style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                padding: '8px 12px',
+                borderRadius: 10,
+                fontSize: 12,
+                border: 'none',
+                cursor: 'pointer',
                 background: model.id === selected ? 'var(--surface-active)' : 'transparent',
                 color: model.id === selected ? 'var(--accent)' : 'var(--text-primary)',
                 fontFamily: 'inherit',
+                transition: 'background 0.1s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (model.id !== selected) e.currentTarget.style.background = 'var(--surface-hover)';
+              }}
+              onMouseLeave={(e) => {
+                if (model.id !== selected) e.currentTarget.style.background = 'transparent';
               }}
             >
               {model.label}

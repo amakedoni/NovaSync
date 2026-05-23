@@ -17,7 +17,7 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
 
   return (
     <div
-      className="flex items-center gap-2 px-3 py-2 mx-2 my-2 rounded-2xl border"
+      className="flex items-center gap-2 px-3 py-2 rounded-2xl border"
       style={{
         background: 'var(--surface-hover)',
         borderColor: value ? 'var(--border-focus)' : 'var(--border-input)',

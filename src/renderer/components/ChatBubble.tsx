@@ -212,15 +212,16 @@ export default function ChatBubble() {
           <div className="flex-1 overflow-y-auto" style={{ display: 'flex', flexDirection: 'column' }}>
             {/* Empty state */}
             {state === 'empty' && (
-              <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6 pb-2">
+              <div className="flex-1 flex flex-col items-center gap-3 px-4" style={{ paddingTop: '12%' }}>
+                {/* Compact branding */}
                 <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{
                     background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(124,58,237,0.08))',
                     border: '1px solid rgba(167,139,250,0.15)',
                   }}
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
                       stroke="var(--accent)" strokeWidth="1.5"
@@ -231,21 +232,15 @@ export default function ChatBubble() {
                     />
                   </svg>
                 </div>
-                <div className="text-center">
-                  <h2
-                    className="text-sm font-semibold mb-1"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    NovaSync
-                  </h2>
-                  <p
-                    className="text-[11px] leading-relaxed max-w-[240px]"
-                    style={{ color: 'var(--text-tertiary)' }}
-                  >
-                    Your personal AI assistant. Ask anything, explain code, summarize text, and more.
-                  </p>
-                </div>
-                <div className="w-full max-w-[320px]">
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  NovaSync
+                </span>
+
+                {/* Input — the main element */}
+                <div className="w-full">
                   <InputBar
                     value={query}
                     onChange={setQuery}
@@ -253,13 +248,12 @@ export default function ChatBubble() {
                     autoFocus
                   />
                 </div>
-                <div className="flex items-center gap-3 flex-wrap justify-center">
+
+                {/* Actions below input */}
+                <div className="flex items-center gap-2 flex-wrap justify-center">
                   <QuickActions onAction={handleQuickAction} />
                   <ModelSelector models={MODELS} selected={model} onSelect={setModel} />
                 </div>
-                <span className="text-[9px]" style={{ color: 'var(--text-tertiary)', opacity: 0.6 }}>
-                  Esc to close
-                </span>
               </div>
             )}
 
@@ -348,7 +342,7 @@ export default function ChatBubble() {
 
           {/* Input bar — only in streaming state (done state uses ActionBar's follow-up) */}
           {state === 'streaming' && (
-            <div style={{ borderTop: '1px solid var(--border-subtle)' }}>
+            <div className="px-2 py-1" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               <InputBar
                 value={query}
                 onChange={setQuery}

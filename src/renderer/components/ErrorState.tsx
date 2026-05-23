@@ -5,38 +5,26 @@ interface Props {
 
 export default function ErrorState({ message, onRetry }: Props) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8">
-      <div
-        className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold flex-shrink-0"
-        style={{
-          background: 'var(--error-bg)',
-          border: '1px solid rgba(255,130,130,0.2)',
-          color: 'var(--error)',
-        }}
-      >
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 32 }}>
+      <div style={{
+        width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        background: 'var(--error-bg)', border: '1px solid rgba(255,130,130,0.2)', color: 'var(--error)',
+      }}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.2" />
           <path d="M8 5v3.5M8 11v.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </div>
-      <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-        Something went wrong
-      </span>
+      <span style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 600 }}>Something went wrong</span>
       {message && (
-        <span className="text-[11px] text-center max-w-[260px] leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
+        <span style={{ color: 'var(--text-tertiary)', fontSize: 11, textAlign: 'center', maxWidth: 260, lineHeight: 1.6 }}>
           {message}
         </span>
       )}
-      <button
-        onClick={onRetry}
-        className="mt-1 px-4 py-2 rounded-2xl text-[11px] font-semibold border-none cursor-pointer transition-all hover:opacity-90 active:scale-[0.97]"
-        style={{
-          background: 'var(--surface-active)',
-          border: '1px solid rgba(167,139,250,0.25)',
-          color: 'var(--accent)',
-          fontFamily: 'inherit',
-        }}
-      >
+      <button onClick={onRetry} style={{
+        marginTop: 4, padding: '8px 18px', borderRadius: 20, fontSize: 11, fontWeight: 600, border: '1px solid rgba(167,139,250,0.25)',
+        background: 'var(--surface-active)', color: 'var(--accent)', cursor: 'pointer', fontFamily: 'inherit',
+      }}>
         Retry
       </button>
     </div>

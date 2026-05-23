@@ -43,7 +43,7 @@ export default function MessageList({ isThinking }: Props) {
     <div
       ref={scrollRef}
       onScroll={handleScroll}
-      className="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col gap-3"
+      style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}
     >
       {messages.map((msg: Message) =>
         msg.role === 'user' ? (

@@ -21,21 +21,17 @@ export default function UserMessage({ content, timestamp }: Props) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="flex justify-end"
+      style={{ display: 'flex', justifyContent: 'flex-end' }}
     >
-      <div className="max-w-[85%] flex flex-col items-end gap-0.5">
-        <div
-          className="px-3.5 py-2 text-xs leading-relaxed"
-          style={{
-            background: 'linear-gradient(135deg, rgba(167,139,250,0.20), rgba(124,58,237,0.12))',
-            color: 'var(--text-primary)',
-            borderRadius: '16px 16px 4px 16px',
-            wordBreak: 'break-word',
-          }}
-        >
+      <div style={{ maxWidth: '85%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+        <div style={{
+          padding: '8px 14px', fontSize: 12, lineHeight: 1.6,
+          background: 'linear-gradient(135deg, rgba(167,139,250,0.20), rgba(124,58,237,0.12))',
+          color: 'var(--text-primary)', borderRadius: '16px 16px 4px 16px', wordBreak: 'break-word',
+        }}>
           {content}
         </div>
-        <span className="text-[9px] px-1" style={{ color: 'var(--text-tertiary)' }}>
+        <span style={{ color: 'var(--text-tertiary)', fontSize: 9, padding: '0 4px' }}>
           {formatTime(timestamp)}
         </span>
       </div>

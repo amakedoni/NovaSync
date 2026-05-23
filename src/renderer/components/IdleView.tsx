@@ -21,15 +21,12 @@ export default function IdleView({
   return (
     <div
       style={{
-        flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '0 18px 14px',
+        padding: '10px 18px 12px',
         position: 'relative',
         zIndex: 1,
-        gap: 8,
+        gap: 6,
       }}
     >
       {/* Input row: field + separator + model + mode */}

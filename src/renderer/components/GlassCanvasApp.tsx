@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useChatStore } from '../store/chat';
 import { MODES } from './ModeSelector';
@@ -58,12 +58,47 @@ export default function GlassCanvasApp() {
     return () => { unsubs.forEach((fn) => fn()); };
   }, []);
 
-  // ── Resize window on state change ──
+  // ── Window resize: IDLE → compact, conversation → grow with content ──
+  const prevStateRef = useRef(state);
+
   useEffect(() => {
+    const prev = prevStateRef.current;
+    prevStateRef.current = state;
+
     if (state === 'empty') {
       window.electronAPI?.resizeChat?.(480, 90);
-    } else {
-      window.electronAPI?.resizeChat?.(480, 520);
+      return;
+    }
+
+    // Initial expansion when leaving IDLE
+    if (prev === 'empty') {
+      window.electronAPI?.resizeChat?.(480, 200);
+    }
+
+    // During streaming: continuously grow window as content builds up
+    if (state === 'streaming') {
+      let raf: number;
+      const measure = () => {
+        const contentH = document.documentElement.scrollHeight;
+        const windowH = window.innerHeight;
+        if (contentH > windowH - 30) {
+          const newH = Math.min(contentH + 40, Math.round(window.screen.availHeight * 0.75));
+          window.electronAPI?.resizeChat?.(480, newH);
+        }
+        raf = requestAnimationFrame(measure);
+      };
+      // Double rAF — let React commit DOM before measuring
+      raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(measure);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+
+    // When done or error: one final resize to fit content
+    if (state === 'done' || state === 'error') {
+      const contentH = document.documentElement.scrollHeight;
+      const newH = Math.min(contentH + 40, Math.round(window.screen.availHeight * 0.75));
+      window.electronAPI?.resizeChat?.(480, Math.max(200, newH));
     }
   }, [state]);
 

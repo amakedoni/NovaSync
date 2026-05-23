@@ -212,22 +212,19 @@ button:focus-visible {
   transform: scale(0.97);
 }
 
-/* ── Interactive element transitions ──────────────── */
+/* ── Interactive element base ─────────────────────── */
 
-button, input, select, textarea {
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+button {
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 
-button:hover {
-  opacity: 0.9;
-}
-
-button:active {
-  transform: scale(0.97);
+input {
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 button:disabled {
-  opacity: 0.4;
   cursor: not-allowed;
 }
 

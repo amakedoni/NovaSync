@@ -15,12 +15,18 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
     if (autoFocus) inputRef.current?.focus();
   }, [autoFocus]);
 
+  const canSend = value.trim().length > 0 && !disabled;
+
   return (
     <div
-      className="flex items-center gap-2 px-3 py-2 rounded-2xl border"
       style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '6px 6px 6px 14px',
+        borderRadius: 16,
         background: 'var(--surface-hover)',
-        borderColor: value ? 'var(--border-focus)' : 'var(--border-input)',
+        border: `1px solid ${value ? 'var(--border-focus)' : 'var(--border-input)'}`,
         boxShadow: value ? 'var(--shadow-input)' : 'none',
         transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
       }}
@@ -31,7 +37,7 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && !e.shiftKey && !disabled && value.trim()) {
+          if (e.key === 'Enter' && !e.shiftKey && canSend) {
             e.preventDefault();
             onSubmit();
           }
@@ -40,23 +46,39 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
         disabled={disabled}
         autoFocus={autoFocus}
         spellCheck={false}
-        className="flex-1 bg-transparent border-none outline-none text-sm"
-        style={{ color: 'var(--text-primary)', fontFamily: 'inherit' }}
+        style={{
+          flex: 1,
+          minWidth: 0,
+          background: 'transparent',
+          border: 'none',
+          outline: 'none',
+          fontSize: 13,
+          color: 'var(--text-primary)',
+          fontFamily: 'inherit',
+          padding: 0,
+        }}
       />
 
       <button
         onClick={onSubmit}
-        disabled={disabled || !value.trim()}
+        disabled={!canSend}
         aria-label="Send"
-        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-none cursor-pointer transition-all"
         style={{
-          background: value.trim() && !disabled
+          width: 30,
+          height: 30,
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          border: 'none',
+          cursor: canSend ? 'pointer' : 'default',
+          background: canSend
             ? 'linear-gradient(135deg, var(--accent), var(--accent-strong))'
             : 'rgba(140,100,220,0.12)',
-          boxShadow: value.trim() && !disabled ? 'var(--shadow-button)' : 'none',
-          opacity: value.trim() && !disabled ? 1 : 0.4,
+          boxShadow: canSend ? 'var(--shadow-button)' : 'none',
+          opacity: canSend ? 1 : 0.35,
           color: '#fff',
-          fontSize: '14px',
         }}
       >
         <svg width="12" height="12" viewBox="0 0 14 14" fill="none">

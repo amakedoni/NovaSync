@@ -4,6 +4,7 @@ interface ElectronAPI {
   sendQuery: (data: { query: string; model: string }) => void;
   hideChat: () => void;
   chatReady: () => void;
+  onChatOpened: (callback: () => void) => Unsubscriber;
   onResponseChunk: (callback: (chunk: string) => void) => Unsubscriber;
   onResponseDone: (callback: (fullText: string) => void) => Unsubscriber;
   onResponseError: (callback: (error: string) => void) => Unsubscriber;

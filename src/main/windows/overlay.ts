@@ -49,6 +49,7 @@ export function showChatWindow(): void {
   if (chatWindow) {
     chatWindow.show();
     chatWindow.focus();
+    chatWindow.webContents.send('chat:opened');
   }
 }
 

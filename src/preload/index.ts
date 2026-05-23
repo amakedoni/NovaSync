@@ -10,6 +10,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   chatReady: () => ipcRenderer.send('chat:ready'),
 
+  onChatOpened: (callback: () => void) => {
+    const handler = (_event: IpcRendererEvent) => callback();
+    ipcRenderer.on('chat:opened', handler);
+    return () => { ipcRenderer.removeListener('chat:opened', handler); };
+  },
+
   // ── Response events ───────────────────────────
   onResponseChunk: (callback: (chunk: string) => void) => {
     const handler = (_event: IpcRendererEvent, chunk: string) => callback(chunk);

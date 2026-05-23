@@ -44,7 +44,7 @@ function nextId(): string {
   return (++msgId).toString(36) + Date.now().toString(36);
 }
 
-export const useChatStore = create<ChatStore>((set, get) => ({
+export const useChatStore = create<ChatStore>()((set, get) => ({
   state: 'empty',
   currentId: null,
   messages: [],
@@ -83,7 +83,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           timestamp: Date.now(),
         });
       }
-      return { messages: msgs, state: 'streaming' as ChatState };
+      return { messages: msgs, state: 'streaming' };
     });
   },
 
@@ -94,7 +94,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       if (last && last.role === 'assistant') {
         msgs[msgs.length - 1] = { ...last, content: fullText };
       }
-      return { messages: msgs, state: 'done' as ChatState };
+      return { messages: msgs, state: 'done' };
     });
   },
 

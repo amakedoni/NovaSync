@@ -121,9 +121,11 @@ export default function ChatBubble() {
     boxShadow: 'var(--shadow-window)',
     overflow: 'hidden',
     width: '100%',
+    maxWidth: '100%',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
+    boxSizing: 'border-box',
   };
 
   return (
@@ -137,9 +139,9 @@ export default function ChatBubble() {
           {/* ═══ CONTENT (flex-1, min-h-0 — children handle their own overflow) ═══ */}
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
 
-            {/* ── Empty: compact branding, centered ── */}
+            {/* ── Empty: logo + name + QuickActions, all vertically centered ── */}
             {state === 'empty' && (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 20px' }}>
                 <div style={{ width: 38, height: 38, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(167,139,250,0.18), rgba(124,58,237,0.10))', border: '1px solid rgba(167,139,250,0.15)' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="var(--accent)" strokeWidth="1.5" />
@@ -147,6 +149,7 @@ export default function ChatBubble() {
                   </svg>
                 </div>
                 <span style={{ color: 'var(--accent)', fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em' }}>NovaSync</span>
+                <QuickActions onAction={quickAction} />
               </div>
             )}
 
@@ -167,13 +170,12 @@ export default function ChatBubble() {
 
           {/* ═══ BOTTOM ═══ */}
 
-          {/* Empty: QuickActions (2x2 grid) + ModelSelector + InputBar */}
+          {/* Empty: ModelSelector row + InputBar — separated from content by border-top */}
           {state === 'empty' && (
-            <div style={{ padding: '10px 14px 12px', borderTop: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <QuickActions onAction={quickAction} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ padding: '10px 14px 12px', borderTop: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <ModelSelector models={MODELS} selected={model} onSelect={setModel} />
-                <span style={{ color: 'var(--text-tertiary)', fontSize: 9, opacity: 0.6 }}>Esc to close</span>
+                <span style={{ color: 'var(--text-tertiary)', fontSize: 9, opacity: 0.45 }}>Esc to close</span>
               </div>
               <InputBar value={query} onChange={setQuery} onSubmit={submit} autoFocus />
             </div>

@@ -26,7 +26,7 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
         padding: '6px 6px 6px 14px',
         borderRadius: 16,
         background: 'var(--bg-secondary)',
-        border: `1px solid ${value ? 'var(--border-focus)' : 'var(--border-input)'}`,
+        border: `1px solid ${value ? 'var(--border-focus)' : 'rgba(255,255,255,0.12)'}`,
         boxShadow: value ? '0 0 0 1px var(--accent-glow), var(--shadow-input)' : 'none',
         transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
       }}

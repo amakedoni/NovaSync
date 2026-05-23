@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function ModeSelector({ selected, onSelect }: Props) {
-  return <Dropdown items={MODES} selected={selected} onSelect={onSelect} />;
+  return <Dropdown items={MODES} selected={selected} onSelect={onSelect} variant="accent" />;
 }
 
 export { MODES };

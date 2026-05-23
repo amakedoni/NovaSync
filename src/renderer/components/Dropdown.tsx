@@ -6,11 +6,12 @@ interface DropdownProps {
   selected: string;
   onSelect: (id: string) => void;
   side?: 'left' | 'right';
+  variant?: 'default' | 'accent';
 }
 
 const spring = { type: 'spring' as const, stiffness: 200, damping: 24 };
 
-function Dropdown({ items, selected, onSelect, side = 'right' }: DropdownProps) {
+function Dropdown({ items, selected, onSelect, side = 'right', variant = 'default' }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [focusIndex, setFocusIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,23 +65,29 @@ function Dropdown({ items, selected, onSelect, side = 'right' }: DropdownProps) 
 
   const current = items.find((i) => i.id === selected);
 
+  const isAccent = variant === 'accent';
   const triggerStyle: React.CSSProperties = useMemo(() => ({
     height: 30,
     padding: '0 10px',
     borderRadius: 'var(--radius-pill)',
-    background: open ? 'var(--surface-active)' : 'var(--surface-hover)',
-    border: '0.5px solid var(--border-input)',
+    background: open
+      ? (isAccent ? 'rgba(90,200,250,0.14)' : 'var(--surface-active)')
+      : (isAccent ? 'rgba(90,200,250,0.08)' : 'var(--surface-hover)'),
+    border: isAccent
+      ? '0.5px solid rgba(90,200,250,0.18)'
+      : '0.5px solid var(--border-input)',
     display: 'flex',
     alignItems: 'center',
     gap: 4,
     cursor: 'pointer',
     fontFamily: 'inherit',
     fontSize: 10,
-    color: 'var(--text-secondary)',
+    fontWeight: isAccent ? 500 : undefined,
+    color: isAccent ? 'var(--accent)' : 'var(--text-secondary)',
     whiteSpace: 'nowrap',
     transition: 'background 0.15s ease, border-color 0.15s ease',
     flexShrink: 0,
-  }), [open]);
+  }), [open, isAccent]);
 
   const menuStyle: React.CSSProperties = useMemo(() => ({
     position: 'absolute',

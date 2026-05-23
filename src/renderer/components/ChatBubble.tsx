@@ -6,7 +6,7 @@ import MessageList from './MessageList';
 import InputBar from './InputBar';
 import ErrorState from './ErrorState';
 import QuickActions from '../overlay/components/QuickActions';
-import ModelSelector from '../overlay/components/ModelSelector';
+import ModelSelector from './ModelSelector';
 import ActionBar from '../widget/components/ActionBar';
 import SettingsView from './SettingsView';
 

@@ -18,8 +18,9 @@ export default function NovaMessage({ content, isStreaming }: Props) {
         width: 22, height: 22, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0, fontSize: 10, fontWeight: 700,
         background: isStreaming
-          ? 'linear-gradient(135deg, rgba(167,139,250,0.35), rgba(124,58,237,0.2))'
-          : 'linear-gradient(135deg, rgba(167,139,250,0.2), rgba(124,58,237,0.1))',
+          ? 'linear-gradient(135deg, rgba(90,200,250,0.25), rgba(90,200,250,0.12))'
+          : 'linear-gradient(135deg, rgba(90,200,250,0.18), rgba(90,200,250,0.08))',
+        border: '0.5px solid rgba(90,200,250,0.12)',
         color: 'var(--accent)',
         boxShadow: isStreaming ? '0 0 8px var(--accent-glow)' : 'none',
         transition: 'all 0.3s ease',
@@ -38,7 +39,7 @@ export default function NovaMessage({ content, isStreaming }: Props) {
                   return (
                     <code style={{
                       padding: '1px 6px', borderRadius: 4, fontSize: '0.9em',
-                      background: 'rgba(140,100,220,0.12)',
+                      background: 'rgba(90,200,250,0.08)',
                       fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
                     }}>{children}</code>
                   );
@@ -47,7 +48,7 @@ export default function NovaMessage({ content, isStreaming }: Props) {
                   <pre style={{
                     margin: '12px 0', padding: '14px 16px', borderRadius: 10, overflowX: 'auto',
                     fontSize: 11, lineHeight: 1.5,
-                    background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-subtle)',
+                    background: 'rgba(60,60,64,0.5)', border: '1px solid var(--border-subtle)',
                     fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
                   }}>
                     <code className={className}>{children}</code>

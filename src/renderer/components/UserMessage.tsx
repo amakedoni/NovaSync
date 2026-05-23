@@ -26,7 +26,8 @@ export default function UserMessage({ content, timestamp }: Props) {
       <div style={{ maxWidth: '85%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
         <div style={{
           padding: '8px 14px', fontSize: 12, lineHeight: 1.6,
-          background: 'linear-gradient(135deg, rgba(167,139,250,0.20), rgba(124,58,237,0.12))',
+          background: 'linear-gradient(135deg, rgba(90,200,250,0.12), rgba(90,200,250,0.05))',
+          border: '0.5px solid rgba(90,200,250,0.08)',
           color: 'var(--text-primary)', borderRadius: '16px 16px 4px 16px', wordBreak: 'break-word',
         }}>
           {content}

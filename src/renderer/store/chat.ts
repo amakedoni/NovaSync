@@ -26,6 +26,9 @@ interface ChatStore {
   errorMessage: string;
   conversations: Conversation[];
 
+  mode: string;
+  setMode: (mode: string) => void;
+
   setModel: (model: string) => void;
   addUserMessage: (content: string) => void;
   appendChunk: (chunk: string) => void;
@@ -49,10 +52,12 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   currentId: null,
   messages: [],
   model: 'deepseek-chat',
+  mode: 'chat',
   errorMessage: '',
   conversations: [],
 
   setModel: (model) => set({ model }),
+  setMode: (mode) => set({ mode }),
 
   addUserMessage: (content) => {
     const userMsg: Message = {
@@ -102,9 +107,9 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   setError: (message) =>
     set({ errorMessage: message, state: message ? 'error' : 'streaming' }),
 
-  reset: () => set({ state: 'empty', currentId: null, messages: [], errorMessage: '' }),
+  reset: () => set({ state: 'empty', currentId: null, messages: [], errorMessage: '', mode: 'chat' }),
 
-  newConversation: () => set({ state: 'empty', currentId: null, messages: [], errorMessage: '' }),
+  newConversation: () => set({ state: 'empty', currentId: null, messages: [], errorMessage: '', mode: 'chat' }),
 
   loadConversation: (id) => {
     const conv = get().conversations.find((c) => c.id === id);

@@ -157,7 +157,7 @@ export default function HistoryWindow() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', borderTop: '1px solid var(--border-subtle)' }}>
           <span style={{ color: 'var(--text-tertiary)', fontSize: 10 }}>{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}</span>
           <button onClick={handleClear} style={{
-            padding: '4px 10px', borderRadius: 10, fontSize: 10, border: confirmClear ? '1px solid rgba(255,130,130,0.3)' : '1px solid transparent',
+            padding: '4px 10px', borderRadius: 10, fontSize: 10, border: confirmClear ? '1px solid rgba(255,69,58,0.3)' : '1px solid transparent',
             background: confirmClear ? 'var(--error-bg)' : 'transparent', color: confirmClear ? 'var(--error)' : 'var(--text-tertiary)', cursor: 'pointer', fontFamily: 'inherit',
           }}>{confirmClear ? 'Confirm clear?' : 'Clear all'}</button>
         </div>

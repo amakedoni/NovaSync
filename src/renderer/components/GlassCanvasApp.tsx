@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useChatStore } from '../store/chat';
 import { MODES } from './ModeSelector';
 import WindowShell from './WindowShell';
@@ -156,34 +156,59 @@ export default function GlassCanvasApp() {
             onClose={close}
           />
 
-          {/* IDLE state */}
-          {state === 'empty' && (
-            <IdleView
-              query={query}
-              onQueryChange={setQuery}
-              onSubmit={submit}
-              models={MODELS}
-              model={model}
-              onModelSelect={setModel}
-              mode={mode}
-              onModeSelect={setMode}
-            />
-          )}
+          {/* ── Content area with morph transitions ── */}
+          <AnimatePresence mode="wait">
+            {state === 'empty' && (
+              <motion.div
+                key="idle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.15 }}
+              >
+                <IdleView
+                  query={query}
+                  onQueryChange={setQuery}
+                  onSubmit={submit}
+                  models={MODELS}
+                  model={model}
+                  onModelSelect={setModel}
+                  mode={mode}
+                  onModeSelect={setMode}
+                />
+              </motion.div>
+            )}
 
-          {/* Conversation (STREAMING + DONE) */}
-          {(state === 'streaming' || state === 'done') && messages.length > 0 && (
-            <ConversationView
-              isThinking={isThinking}
-              onCopy={copy}
-              onRetry={retry}
-              onFollowUp={followUp}
-            />
-          )}
+            {(state === 'streaming' || state === 'done') && messages.length > 0 && (
+              <motion.div
+                key="conversation"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
+              >
+                <ConversationView
+                  isThinking={isThinking}
+                  onCopy={copy}
+                  onRetry={retry}
+                  onFollowUp={followUp}
+                />
+              </motion.div>
+            )}
 
-          {/* Error */}
-          {showError && (
-            <ErrorState message={errorMessage} onRetry={retry} />
-          )}
+            {showError && (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ErrorState message={errorMessage} onRetry={retry} />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Error with conversation — retry/new chat buttons */}
           {showError && hasConversation && (

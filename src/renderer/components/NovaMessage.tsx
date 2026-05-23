@@ -12,6 +12,7 @@ export default function NovaMessage({ content, isStreaming }: Props) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
+      layout
       style={{ display: 'flex', gap: 8 }}
     >
       <div style={{
@@ -28,7 +29,10 @@ export default function NovaMessage({ content, isStreaming }: Props) {
         N
       </div>
 
-      <div style={{ flex: 1, minWidth: 0, color: 'var(--text-primary)', fontSize: 12, lineHeight: 1.6, wordBreak: 'break-word' }}>
+      <motion.div
+        layout
+        style={{ flex: 1, minWidth: 0, color: 'var(--text-primary)', fontSize: 12, lineHeight: 1.6, wordBreak: 'break-word' }}
+      >
         {content ? (
           <ReactMarkdown
             components={{
@@ -68,7 +72,7 @@ export default function NovaMessage({ content, isStreaming }: Props) {
         ) : null}
 
         {isStreaming && <span className="streaming-cursor" />}
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

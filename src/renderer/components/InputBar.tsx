@@ -17,7 +17,7 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
 
   return (
     <div
-      className="flex items-center gap-2 px-3 py-2 mx-4 my-2 rounded-2xl border"
+      className="flex items-center gap-2 px-3 py-2 mx-2 my-2 rounded-2xl border"
       style={{
         background: 'var(--surface-hover)',
         borderColor: value ? 'var(--border-focus)' : 'var(--border-input)',
@@ -25,17 +25,6 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
         transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
       }}
     >
-      {/* Search icon */}
-      <svg
-        width="15" height="15" viewBox="0 0 24 24"
-        fill="none" stroke="var(--text-tertiary)" strokeWidth="2"
-        strokeLinecap="round" strokeLinejoin="round"
-        style={{ flexShrink: 0, opacity: value ? 1 : 0.6, transition: 'opacity 0.15s' }}
-      >
-        <circle cx="11" cy="11" r="8" />
-        <path d="m21 21-4.3-4.3" />
-      </svg>
-
       <input
         ref={inputRef}
         type="text"
@@ -47,7 +36,7 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
             onSubmit();
           }
         }}
-        placeholder="Ask anything..."
+        placeholder={disabled ? 'Waiting for response...' : 'Ask anything...'}
         disabled={disabled}
         autoFocus={autoFocus}
         spellCheck={false}
@@ -59,19 +48,20 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
         onClick={onSubmit}
         disabled={disabled || !value.trim()}
         aria-label="Send"
-        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-none cursor-pointer"
+        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-none cursor-pointer transition-all"
         style={{
-          background: value.trim()
+          background: value.trim() && !disabled
             ? 'linear-gradient(135deg, var(--accent), var(--accent-strong))'
             : 'rgba(140,100,220,0.12)',
-          boxShadow: value.trim() ? 'var(--shadow-button)' : 'none',
-          opacity: value.trim() ? 1 : 0.4,
-          transition: 'all 0.15s ease',
+          boxShadow: value.trim() && !disabled ? 'var(--shadow-button)' : 'none',
+          opacity: value.trim() && !disabled ? 1 : 0.4,
           color: '#fff',
-          fontSize: '12px',
+          fontSize: '14px',
         }}
       >
-        →
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </button>
     </div>
   );

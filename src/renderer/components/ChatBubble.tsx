@@ -34,10 +34,15 @@ export default function ChatBubble() {
   const messages = useChatStore((s) => s.messages);
   const setModel = useChatStore((s) => s.setModel);
   const addUserMessage = useChatStore((s) => s.addUserMessage);
+  const reset = useChatStore((s) => s.reset);
 
   const hasConversation = state !== 'empty';
+  const isThinking = state === 'streaming' && messages.length > 0 && messages[messages.length - 1]?.role === 'user';
 
-  // IPC listeners — mount once
+  const showMessageList = (state === 'streaming' || state === 'done') && messages.length > 0;
+  const showActionBar = state === 'done' && messages.length > 0;
+  const showError = state === 'error';
+
   useEffect(() => {
     const unsubs: (() => void)[] = [];
 
@@ -77,7 +82,6 @@ export default function ChatBubble() {
     });
     if (r6) unsubs.push(r6);
 
-    // Signal that the renderer is ready
     window.electronAPI?.chatReady?.();
 
     return () => {
@@ -85,7 +89,6 @@ export default function ChatBubble() {
     };
   }, []);
 
-  // Global keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -97,8 +100,6 @@ export default function ChatBubble() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  /* ---------- handlers ---------- */
 
   const handleSubmit = useCallback(() => {
     const trimmed = query.trim();
@@ -123,7 +124,7 @@ export default function ChatBubble() {
     const msgs = useChatStore.getState().messages;
     const lastUser = [...msgs].reverse().find((m) => m.role === 'user');
     if (!lastUser) return;
-    useChatStore.getState().reset();
+    useChatStore.getState().setError('');
     window.electronAPI?.sendQuery({ query: lastUser.content, model });
   }, [model]);
 
@@ -151,9 +152,11 @@ export default function ChatBubble() {
     setTimeout(() => window.electronAPI?.hideChat?.(), 150);
   }, []);
 
-  /* ---------- render ---------- */
+  const handleNewChat = useCallback(() => {
+    reset();
+    setQuery('');
+  }, [reset]);
 
-  // No API key yet — show settings panel
   if (needsKey) {
     return (
       <motion.div
@@ -177,7 +180,6 @@ export default function ChatBubble() {
     );
   }
 
-  // Normal chat window
   return (
     <AnimatePresence>
       {visible && (
@@ -199,73 +201,161 @@ export default function ChatBubble() {
             flexDirection: 'column',
           }}
         >
-          {/* ---------- Empty state ---------- */}
-          {state === 'empty' && (
-            <>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-                <InputBar
-                  value={query}
-                  onChange={setQuery}
-                  onSubmit={handleSubmit}
-                  autoFocus
-                />
+          {/* Header — always visible */}
+          <Header
+            onOpenHistory={handleOpenHistory}
+            onClose={handleClose}
+            onNewChat={hasConversation ? handleNewChat : undefined}
+          />
+
+          {/* Body — scrollable content area */}
+          <div className="flex-1 overflow-y-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+            {/* Empty state */}
+            {state === 'empty' && (
+              <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6 pb-2">
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(124,58,237,0.08))',
+                    border: '1px solid rgba(167,139,250,0.15)',
+                  }}
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
+                      stroke="var(--accent)" strokeWidth="1.5"
+                    />
+                    <path
+                      d="M8 12l3 3 5-5" stroke="var(--accent)" strokeWidth="1.5"
+                      strokeLinecap="round" strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div className="text-center">
+                  <h2
+                    className="text-sm font-semibold mb-1"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    NovaSync
+                  </h2>
+                  <p
+                    className="text-[11px] leading-relaxed max-w-[240px]"
+                    style={{ color: 'var(--text-tertiary)' }}
+                  >
+                    Your personal AI assistant. Ask anything, explain code, summarize text, and more.
+                  </p>
+                </div>
+                <div className="w-full max-w-[320px]">
+                  <InputBar
+                    value={query}
+                    onChange={setQuery}
+                    onSubmit={handleSubmit}
+                    autoFocus
+                  />
+                </div>
+                <div className="flex items-center gap-3 flex-wrap justify-center">
+                  <QuickActions onAction={handleQuickAction} />
+                  <ModelSelector models={MODELS} selected={model} onSelect={setModel} />
+                </div>
+                <span className="text-[9px]" style={{ color: 'var(--text-tertiary)', opacity: 0.6 }}>
+                  Esc to close
+                </span>
               </div>
-              <div
+            )}
+
+            {/* Message list */}
+            {showMessageList && <MessageList isThinking={isThinking} />}
+
+            {/* Thinking indicator */}
+            {isThinking && (
+              <div className="flex items-center gap-2 px-4 pb-3">
+                <div
+                  className="w-[22px] h-[22px] rounded-lg flex-shrink-0 flex items-center justify-center text-[10px] font-bold"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(167,139,250,0.2), rgba(124,58,237,0.1))',
+                    color: 'var(--accent)',
+                  }}
+                >
+                  N
+                </div>
+                <div className="loading-dots">
+                  <span /><span /><span />
+                </div>
+              </div>
+            )}
+
+            {/* Error */}
+            {showError && (
+              <ErrorState message={errorMessage} onRetry={handleRetry} />
+            )}
+          </div>
+
+          {/* Bottom bar — consistent across states */}
+          {/* Streaming state: just a status indicator */}
+          {state === 'streaming' && !isThinking && (
+            <div
+              className="flex items-center justify-center py-1.5"
+              style={{ borderTop: '1px solid var(--border-subtle)' }}
+            >
+              <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                generating...
+              </span>
+            </div>
+          )}
+
+          {/* Done state: action bar */}
+          {showActionBar && (
+            <ActionBar
+              onCopy={handleCopy}
+              onRetry={handleRetry}
+              onFollowUp={handleFollowUp}
+              hasContent={messages.some((m) => m.role === 'assistant')}
+            />
+          )}
+
+          {/* Error with conversation: retry action */}
+          {showError && hasConversation && (
+            <div
+              className="flex items-center justify-center gap-2 px-3 py-2.5"
+              style={{ borderTop: '1px solid var(--border-subtle)' }}
+            >
+              <button
+                onClick={handleRetry}
+                className="px-4 py-1.5 rounded-2xl text-[11px] font-semibold border-none cursor-pointer"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 16px 12px',
-                  borderTop: '1px solid var(--border-subtle)',
+                  background: 'var(--surface-active)',
+                  border: '1px solid rgba(167,139,250,0.25)',
+                  color: 'var(--accent)',
+                  fontFamily: 'inherit',
                 }}
               >
-                <QuickActions onAction={handleQuickAction} />
-                <ModelSelector models={MODELS} selected={model} onSelect={setModel} />
-              </div>
-            </>
+                Retry
+              </button>
+              <button
+                onClick={handleNewChat}
+                className="px-4 py-1.5 rounded-2xl text-[11px] font-medium border-none cursor-pointer"
+                style={{
+                  background: 'var(--surface-hover)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-secondary)',
+                  fontFamily: 'inherit',
+                }}
+              >
+                New Chat
+              </button>
+            </div>
           )}
 
-          {/* ---------- Streaming / Done states ---------- */}
-          {(state === 'streaming' || state === 'done') && hasConversation && (
-            <>
-              <Header onOpenHistory={handleOpenHistory} onClose={handleClose} />
-              <MessageList />
-              {state === 'streaming' && (
-                <div
-                  className="flex items-center justify-center py-1.5"
-                  style={{ borderTop: '1px solid var(--border-subtle)' }}
-                >
-                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
-                    generating...
-                  </span>
-                </div>
-              )}
-              {state === 'done' && (
-                <ActionBar
-                  onCopy={handleCopy}
-                  onRetry={handleRetry}
-                  onFollowUp={handleFollowUp}
-                  hasContent={messages.length > 0}
-                />
-              )}
-            </>
-          )}
-
-          {/* ---------- Error with prior conversation ---------- */}
-          {state === 'error' && hasConversation && (
-            <>
-              <Header onOpenHistory={handleOpenHistory} onClose={handleClose} />
-              <MessageList />
-              <ErrorState message={errorMessage} onRetry={handleRetry} />
-            </>
-          )}
-
-          {/* ---------- Error without prior conversation ---------- */}
-          {state === 'error' && !hasConversation && (
-            <>
-              <Header onOpenHistory={handleOpenHistory} onClose={handleClose} />
-              <ErrorState message={errorMessage} onRetry={handleRetry} />
-            </>
+          {/* Input bar — only in streaming state (done state uses ActionBar's follow-up) */}
+          {state === 'streaming' && (
+            <div style={{ borderTop: '1px solid var(--border-subtle)' }}>
+              <InputBar
+                value={query}
+                onChange={setQuery}
+                onSubmit={handleSubmit}
+                disabled
+              />
+            </div>
           )}
         </motion.div>
       )}

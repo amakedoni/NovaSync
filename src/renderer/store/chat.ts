@@ -98,7 +98,9 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
     });
   },
 
-  setError: (message) => set({ errorMessage: message, state: 'error' }),
+  // Allow clearing error by passing empty string (reverts to streaming state for retry)
+  setError: (message) =>
+    set({ errorMessage: message, state: message ? 'error' : 'streaming' }),
 
   reset: () => set({ state: 'empty', currentId: null, messages: [], errorMessage: '' }),
 

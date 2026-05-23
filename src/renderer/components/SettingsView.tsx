@@ -14,18 +14,36 @@ export default function SettingsView({ onSaved }: Props) {
   const [provider, setProvider] = useState('deepseek');
   const [apiKey, setApiKey] = useState('');
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   const currentProvider = PROVIDERS.find((p) => p.id === provider)!;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const key = apiKey.trim();
     if (!key) return;
+
+    // Check prefix matches
+    if (!key.startsWith(currentProvider.keyPrefix)) {
+      setError(`Key should start with "${currentProvider.keyPrefix}"`);
+      return;
+    }
+
+    if (key.length < 20) {
+      setError('Key seems too short. Please check it.');
+      return;
+    }
+
+    setError('');
     setSaving(true);
-    window.electronAPI?.saveApiKey(provider, key);
-    setTimeout(() => {
+    try {
+      await window.electronAPI?.saveApiKey(provider, key);
+    } catch {
+      setError('Failed to save. Try again.');
       setSaving(false);
-      onSaved();
-    }, 300);
+      return;
+    }
+    setSaving(false);
+    onSaved();
   };
 
   return (
@@ -54,7 +72,7 @@ export default function SettingsView({ onSaved }: Props) {
           {PROVIDERS.map((p) => (
             <button
               key={p.id}
-              onClick={() => setProvider(p.id)}
+              onClick={() => { setProvider(p.id); setError(''); }}
               className="flex-1 py-1.5 rounded-xl text-[10px] font-semibold border cursor-pointer transition-all"
               style={{
                 background: p.id === provider ? 'var(--surface-active)' : 'var(--surface-hover)',
@@ -80,21 +98,26 @@ export default function SettingsView({ onSaved }: Props) {
         <input
           type="password"
           value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
+          onChange={(e) => { setApiKey(e.target.value); setError(''); }}
           onKeyDown={(e) => e.key === 'Enter' && handleSave()}
           placeholder={currentProvider.keyPrefix + '...'}
           autoFocus
           className="w-full px-3 py-2.5 rounded-xl text-xs outline-none"
           style={{
             background: 'rgba(0,0,0,0.2)',
-            border: '1px solid var(--border-input)',
+            border: `1px solid ${error ? 'var(--error)' : 'var(--border-input)'}`,
             color: 'var(--text-primary)',
             fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
           }}
         />
-        {apiKey.length > 0 && (
+        {apiKey.length > 0 && !error && (
           <span className="block text-right text-[9px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
             {apiKey.length} characters
+          </span>
+        )}
+        {error && (
+          <span className="block text-right text-[9px] mt-1" style={{ color: 'var(--error)' }}>
+            {error}
           </span>
         )}
       </div>

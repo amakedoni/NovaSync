@@ -6,22 +6,22 @@ interface Props {
 
 /**
  * Shared Markdown renderer used by both overlay (history previews)
- * and widget (response body).
+ * and widget (response body). Styling mirrors NovaMessage.
  */
 export default function Markdown({ children }: Props) {
   return (
     <ReactMarkdown
       components={{
+        p: ({ children: pChildren }) => <p className="mb-2 last:mb-0">{pChildren}</p>,
         code: ({ className, children: codeChildren, ...props }) => {
           const isInline = !className;
           if (isInline) {
             return (
               <code
+                className="px-1 py-0.5 rounded text-[0.9em]"
                 style={{
-                  padding: '2px 6px',
-                  borderRadius: 4,
-                  background: 'rgba(255,255,255,0.08)',
-                  fontSize: '0.9em',
+                  background: 'rgba(140,100,220,0.12)',
+                  fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
                 }}
                 {...props}
               >
@@ -31,12 +31,11 @@ export default function Markdown({ children }: Props) {
           }
           return (
             <pre
+              className="my-3 p-3.5 rounded-lg overflow-x-auto text-[11px] leading-relaxed"
               style={{
-                margin: '12px 0',
-                padding: '14px 16px',
-                borderRadius: 8,
                 background: 'rgba(0,0,0,0.35)',
-                overflow: 'auto',
+                border: '1px solid var(--border-subtle)',
+                fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
               }}
             >
               <code className={className} {...props}>
@@ -45,6 +44,14 @@ export default function Markdown({ children }: Props) {
             </pre>
           );
         },
+        a: ({ children: aChildren, href }) => (
+          <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>
+            {aChildren}
+          </a>
+        ),
+        ul: ({ children: ulChildren }) => <ul className="pl-5 mb-2 list-disc">{ulChildren}</ul>,
+        ol: ({ children: olChildren }) => <ol className="pl-5 mb-2 list-decimal">{olChildren}</ol>,
+        li: ({ children: liChildren }) => <li className="mb-1">{liChildren}</li>,
       }}
     >
       {children}

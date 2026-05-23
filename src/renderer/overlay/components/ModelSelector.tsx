@@ -13,28 +13,55 @@ interface Props {
 
 export default function ModelSelector({ models, selected, onSelect }: Props) {
   const [open, setOpen] = useState(false);
-  const [dropUp, setDropUp] = useState(true);
+  const [dropStyle, setDropStyle] = useState<React.CSSProperties>({});
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const current = models.find((m) => m.id === selected);
 
-  const checkPosition = useCallback(() => {
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      setDropUp(spaceBelow < 170);
-    }
+  const calcPosition = useCallback(() => {
+    if (!buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceRight = window.innerWidth - rect.left;
+    // Dropdown min-width is 160px. If not enough space to the right, flip left.
+    const needsLeftAlign = spaceRight < 170;
+    // If not enough space below, open upward.
+    const openUp = spaceBelow < 170;
+
+    setDropStyle({
+      position: 'fixed' as const,
+      ...(openUp
+        ? { bottom: window.innerHeight - rect.top + 6 }
+        : { top: rect.bottom + 6 }),
+      ...(needsLeftAlign
+        ? { right: window.innerWidth - rect.right }
+        : { left: rect.left }),
+      display: 'flex',
+      flexDirection: 'column' as const,
+      gap: 2,
+      borderRadius: 14,
+      padding: 4,
+      minWidth: 160,
+      zIndex: 9999,
+      background: 'var(--bg-secondary)',
+      border: '1px solid var(--border-input)',
+      boxShadow: 'var(--shadow-dropdown)',
+    });
   }, []);
 
   useEffect(() => {
     if (!open) return;
-    checkPosition();
+    calcPosition();
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
     };
     window.addEventListener('click', handler);
-    return () => window.removeEventListener('click', handler);
-  }, [open, checkPosition]);
+    window.addEventListener('resize', calcPosition);
+    return () => {
+      window.removeEventListener('click', handler);
+      window.removeEventListener('resize', calcPosition);
+    };
+  }, [open, calcPosition]);
 
   const triggerBtn: React.CSSProperties = {
     display: 'flex',
@@ -64,21 +91,7 @@ export default function ModelSelector({ models, selected, onSelect }: Props) {
       </button>
 
       {open && (
-        <div style={{
-          position: 'absolute',
-          [dropUp ? 'bottom' : 'top']: 'calc(100% + 6px)',
-          right: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          borderRadius: 14,
-          padding: 4,
-          minWidth: 160,
-          zIndex: 50,
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--border-input)',
-          boxShadow: 'var(--shadow-dropdown)',
-        }}>
+        <div style={dropStyle}>
           {models.map((model) => (
             <button key={model.id}
               onClick={() => { onSelect(model.id); setOpen(false); }}

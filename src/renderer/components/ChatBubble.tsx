@@ -7,7 +7,7 @@ import InputBar from './InputBar';
 import ErrorState from './ErrorState';
 import QuickActions from '../overlay/components/QuickActions';
 import ModelSelector from './ModelSelector';
-import ActionBar from '../widget/components/ActionBar';
+import ActionBar from './ActionBar';
 import SettingsView from './SettingsView';
 
 const MODELS = [
@@ -142,7 +142,7 @@ export default function ChatBubble() {
             {/* ── Empty: logo + name + QuickActions, vertically centered ── */}
             {state === 'empty' && (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 20px' }}>
-                <div style={{ width: 38, height: 38, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(167,139,250,0.18), rgba(124,58,237,0.10))', border: '1px solid rgba(167,139,250,0.15)' }}>
+                <div style={{ width: 38, height: 38, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(90,200,250,0.18), rgba(90,200,250,0.08))', border: '0.5px solid rgba(90,200,250,0.12)' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="var(--accent)" strokeWidth="1.5" />
                     <path d="M8 12l3 3 5-5" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -159,7 +159,7 @@ export default function ChatBubble() {
             {/* ── Thinking dots ── */}
             {isThinking && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px 8px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(167,139,250,0.20), rgba(124,58,237,0.10))', color: 'var(--accent)', fontSize: 10, fontWeight: 700 }}>N</div>
+                <div style={{ width: 22, height: 22, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(90,200,250,0.18), rgba(90,200,250,0.08))', border: '0.5px solid rgba(90,200,250,0.12)', color: 'var(--accent)', fontSize: 10, fontWeight: 700 }}>N</div>
                 <div className="loading-dots"><span /><span /><span /></div>
               </div>
             )}
@@ -208,7 +208,7 @@ export default function ChatBubble() {
           {/* Error with conversation */}
           {showError && hasConversation && (
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '10px 12px', borderTop: '1px solid var(--border-subtle)' }}>
-              <button onClick={retry} style={{ padding: '6px 18px', borderRadius: 20, fontSize: 11, fontWeight: 600, border: '1px solid rgba(167,139,250,0.25)', background: 'var(--surface-active)', color: 'var(--accent)', cursor: 'pointer' }}>Retry</button>
+              <button onClick={retry} style={{ padding: '6px 18px', borderRadius: 20, fontSize: 11, fontWeight: 600, border: '0.5px solid rgba(90,200,250,0.2)', background: 'var(--surface-active)', color: 'var(--accent)', cursor: 'pointer' }}>Retry</button>
               <button onClick={newChat} style={{ padding: '6px 18px', borderRadius: 20, fontSize: 11, fontWeight: 500, border: '1px solid var(--border-subtle)', background: 'var(--surface-hover)', color: 'var(--text-secondary)', cursor: 'pointer' }}>New Chat</button>
             </div>
           )}

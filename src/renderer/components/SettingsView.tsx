@@ -141,7 +141,7 @@ export default function SettingsView({ onSaved }: Props) {
         className="w-full py-2.5 rounded-2xl text-[13px] font-semibold border-none cursor-pointer transition-all"
         style={{
           background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
-          boxShadow: '0 0 16px rgba(167,139,250,0.2)',
+          boxShadow: '0 0 16px var(--accent-glow)',
           color: '#fff',
           fontFamily: 'inherit',
           opacity: !apiKey.trim() || saving ? 0.4 : 1,

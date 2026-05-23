@@ -76,7 +76,7 @@ export default function ActionBar({ onCopy, onRetry, onFollowUp, hasContent }: P
           style={{
             width: 26, height: 26, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0, border: 'none', cursor: followUp.trim() ? 'pointer' : 'default',
-            background: followUp.trim() ? 'linear-gradient(135deg, var(--accent), var(--accent-strong))' : 'rgba(140,100,220,0.12)',
+            background: followUp.trim() ? 'linear-gradient(135deg, var(--accent), var(--accent-strong))' : 'rgba(90,200,250,0.08)',
             boxShadow: followUp.trim() ? 'var(--shadow-button)' : 'none', opacity: followUp.trim() ? 1 : 0.4, color: '#fff',
           }}>
           <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>

@@ -1,6 +1,6 @@
 import { useChatStore } from '../store/chat';
 import MessageList from './MessageList';
-import ActionBar from '../widget/components/ActionBar';
+import ActionBar from './ActionBar';
 
 interface Props {
   isThinking: boolean;

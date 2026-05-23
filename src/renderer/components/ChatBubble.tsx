@@ -34,15 +34,18 @@ export default function ChatBubble() {
   const messages = useChatStore((s) => s.messages);
   const setModel = useChatStore((s) => s.setModel);
   const addUserMessage = useChatStore((s) => s.addUserMessage);
-  const setError = useChatStore((s) => s.setError);
-  const reset = useChatStore((s) => s.reset);
-  const getTitle = useChatStore((s) => s.getTitle);
 
   const hasConversation = state !== 'empty';
 
   // IPC listeners — mount once
   useEffect(() => {
     const unsubs: (() => void)[] = [];
+
+    const r0 = window.electronAPI?.onChatOpened?.(() => {
+      setVisible(true);
+      setQuery('');
+    });
+    if (r0) unsubs.push(r0);
 
     const r1 = window.electronAPI?.onResponseChunk?.((chunk: string) => {
       useChatStore.getState().appendChunk(chunk);
@@ -102,8 +105,8 @@ export default function ChatBubble() {
     if (!trimmed) return;
     addUserMessage(trimmed);
     setQuery('');
-    window.electronAPI?.sendQuery({ query: trimmed, model: useChatStore.getState().model });
-  }, [query, addUserMessage]);
+    window.electronAPI?.sendQuery({ query: trimmed, model });
+  }, [query, addUserMessage, model]);
 
   const handleQuickAction = useCallback(
     (action: QuickAction) => {
@@ -111,19 +114,18 @@ export default function ChatBubble() {
       const prompt = base ? `${action.systemPrompt}\n\n${base}` : action.systemPrompt;
       addUserMessage(prompt);
       setQuery('');
-      window.electronAPI?.sendQuery({ query: prompt, model: useChatStore.getState().model });
+      window.electronAPI?.sendQuery({ query: prompt, model });
     },
-    [query, addUserMessage],
+    [query, addUserMessage, model],
   );
 
   const handleRetry = useCallback(() => {
     const msgs = useChatStore.getState().messages;
     const lastUser = [...msgs].reverse().find((m) => m.role === 'user');
     if (!lastUser) return;
-    const currentModel = useChatStore.getState().model;
     useChatStore.getState().reset();
-    window.electronAPI?.sendQuery({ query: lastUser.content, model: currentModel });
-  }, []);
+    window.electronAPI?.sendQuery({ query: lastUser.content, model });
+  }, [model]);
 
   const handleCopy = useCallback(() => {
     const msgs = useChatStore.getState().messages;
@@ -135,9 +137,9 @@ export default function ChatBubble() {
   const handleFollowUp = useCallback(
     (text: string) => {
       addUserMessage(text);
-      window.electronAPI?.sendQuery({ query: text, model: useChatStore.getState().model });
+      window.electronAPI?.sendQuery({ query: text, model });
     },
-    [addUserMessage],
+    [addUserMessage, model],
   );
 
   const handleOpenHistory = useCallback(() => {
@@ -199,7 +201,7 @@ export default function ChatBubble() {
         >
           {/* ---------- Empty state ---------- */}
           {state === 'empty' && (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <>
               <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
                 <InputBar
                   value={query}
@@ -208,7 +210,6 @@ export default function ChatBubble() {
                   autoFocus
                 />
               </div>
-
               <div
                 style={{
                   display: 'flex',
@@ -221,7 +222,7 @@ export default function ChatBubble() {
                 <QuickActions onAction={handleQuickAction} />
                 <ModelSelector models={MODELS} selected={model} onSelect={setModel} />
               </div>
-            </div>
+            </>
           )}
 
           {/* ---------- Streaming / Done states ---------- */}

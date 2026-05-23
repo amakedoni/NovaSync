@@ -1,3 +1,4 @@
+import type { IpcRendererEvent } from 'electron';
 import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -11,33 +12,39 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // ── Response events ───────────────────────────
   onResponseChunk: (callback: (chunk: string) => void) => {
-    ipcRenderer.on('chat:chunk', (_event, chunk) => callback(chunk));
-    return () => { ipcRenderer.removeListener('chat:chunk', callback); };
+    const handler = (_event: IpcRendererEvent, chunk: string) => callback(chunk);
+    ipcRenderer.on('chat:chunk', handler);
+    return () => { ipcRenderer.removeListener('chat:chunk', handler); };
   },
 
   onResponseDone: (callback: (fullText: string) => void) => {
-    ipcRenderer.on('chat:done', (_event, fullText) => callback(fullText));
-    return () => { ipcRenderer.removeListener('chat:done', callback); };
+    const handler = (_event: IpcRendererEvent, fullText: string) => callback(fullText);
+    ipcRenderer.on('chat:done', handler);
+    return () => { ipcRenderer.removeListener('chat:done', handler); };
   },
 
   onResponseError: (callback: (error: string) => void) => {
-    ipcRenderer.on('chat:error', (_event, error) => callback(error));
-    return () => { ipcRenderer.removeListener('chat:error', callback); };
+    const handler = (_event: IpcRendererEvent, error: string) => callback(error);
+    ipcRenderer.on('chat:error', handler);
+    return () => { ipcRenderer.removeListener('chat:error', handler); };
   },
 
   onNeedApiKey: (callback: () => void) => {
-    ipcRenderer.on('chat:need-api-key', () => callback());
-    return () => { ipcRenderer.removeListener('chat:need-api-key', callback); };
+    const handler = (_event: IpcRendererEvent) => callback();
+    ipcRenderer.on('chat:need-api-key', handler);
+    return () => { ipcRenderer.removeListener('chat:need-api-key', handler); };
   },
 
   onApiKeySaved: (callback: () => void) => {
-    ipcRenderer.on('chat:api-key-saved', () => callback());
-    return () => { ipcRenderer.removeListener('chat:api-key-saved', callback); };
+    const handler = (_event: IpcRendererEvent) => callback();
+    ipcRenderer.on('chat:api-key-saved', handler);
+    return () => { ipcRenderer.removeListener('chat:api-key-saved', handler); };
   },
 
   onResponseReset: (callback: () => void) => {
-    ipcRenderer.on('chat:reset', () => callback());
-    return () => { ipcRenderer.removeListener('chat:reset', callback); };
+    const handler = (_event: IpcRendererEvent) => callback();
+    ipcRenderer.on('chat:reset', handler);
+    return () => { ipcRenderer.removeListener('chat:reset', handler); };
   },
 
   // ── API Key ───────────────────────────────────

@@ -155,8 +155,8 @@ export default function ChatBubble() {
   if (needsKey) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, scale: 0.92, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={springTransition}
         style={{
           background: 'var(--bg-primary)',
@@ -166,6 +166,8 @@ export default function ChatBubble() {
           overflow: 'hidden',
           width: '100%',
           height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <SettingsView onSaved={() => setNeedsKey(false)} />
@@ -179,9 +181,9 @@ export default function ChatBubble() {
       {visible && (
         <motion.div
           key="chat-bubble"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.92, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.92, y: 12 }}
           transition={springTransition}
           style={{
             background: 'var(--bg-primary)',
@@ -197,17 +199,8 @@ export default function ChatBubble() {
         >
           {/* ---------- Empty state ---------- */}
           {state === 'empty' && (
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 12,
-              }}
-            >
-              <div style={{ width: '100%', padding: '0 16px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
                 <InputBar
                   value={query}
                   onChange={setQuery}
@@ -218,15 +211,14 @@ export default function ChatBubble() {
 
               <div
                 style={{
-                  width: '100%',
                   display: 'flex',
                   alignItems: 'center',
-                  padding: '0 16px 12px',
-                  gap: 8,
+                  justifyContent: 'space-between',
+                  padding: '8px 16px 12px',
+                  borderTop: '1px solid var(--border-subtle)',
                 }}
               >
                 <QuickActions onAction={handleQuickAction} />
-                <div style={{ flex: 1 }} />
                 <ModelSelector models={MODELS} selected={model} onSelect={setModel} />
               </div>
             </div>

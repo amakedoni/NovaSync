@@ -1,0 +1,35 @@
+appId: com.novasync.app
+productName: NovaSync
+copyright: Copyright © 2025
+
+directories:
+  buildResources: resources
+  output: release
+
+files:
+  - dist-electron/**/*
+  - dist/renderer/**/*
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: resources/icon.ico
+
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  icon: resources/icon.icns
+  category: public.app-category.productivity
+
+linux:
+  target:
+    - target: AppImage
+      arch: [x64]
+  icon: resources/icon.png
+  category: Utility
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true

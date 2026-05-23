@@ -40,8 +40,8 @@ export default function IdleView({
           padding: '0 5px 0 16px',
           borderRadius: 'var(--radius-input)',
           background: 'rgba(60, 60, 64, 0.40)',
-          backdropFilter: 'blur(12px) saturate(1.1)',
-          WebkitBackdropFilter: 'blur(12px) saturate(1.1)',
+          backdropFilter: 'blur(16px) saturate(1.2)',
+          WebkitBackdropFilter: 'blur(16px) saturate(1.2)',
           border: '0.5px solid rgba(255, 255, 255, 0.12)',
         }}
       >

@@ -27,9 +27,9 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
       transition={spring}
       style={{
         // Liquid glass — medium frost 55%, blur 20px, glow border
-        background: 'linear-gradient(135deg, rgba(38, 38, 40, 0.55) 0%, rgba(32, 32, 34, 0.55) 100%)',
-        backdropFilter: 'blur(20px) saturate(1.2)',
-        WebkitBackdropFilter: 'blur(20px) saturate(1.2)',
+        background: 'linear-gradient(135deg, rgba(38, 38, 40, 0.45) 0%, rgba(32, 32, 34, 0.45) 100%)',
+        backdropFilter: 'blur(32px) saturate(1.3)',
+        WebkitBackdropFilter: 'blur(32px) saturate(1.3)',
         border: '0.5px solid rgba(255, 255, 255, 0.12)',
         borderRadius: 'var(--radius-window)',
         boxShadow: '0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.06) inset',

@@ -72,7 +72,6 @@ export default function GlassCanvasApp() {
   }, []);
 
   // ── Window resize: IDLE compact, conversation fluid ──
-  const contentRef = useRef<HTMLDivElement>(null);
   const prevStateRef = useRef(state);
 
   useEffect(() => {
@@ -84,29 +83,40 @@ export default function GlassCanvasApp() {
       return;
     }
 
-    // Initial expansion when leaving IDLE
     if (prev === 'empty') {
       window.electronAPI?.resizeChat?.(480, 300);
     }
+  }, [state]);
 
-    // Use ResizeObserver to grow window as content grows
-    if (state === 'streaming' && contentRef.current) {
-      const el = contentRef.current;
-      const observer = new ResizeObserver(() => {
-        const contentH = el.scrollHeight;
-        const newH = Math.min(contentH + 60, Math.round(window.screen.availHeight * 0.75));
+  // ── Grow window as messages accumulate during streaming ──
+  useEffect(() => {
+    if (state !== 'streaming') return;
+
+    // Measure after React commits DOM
+    const raf = requestAnimationFrame(() => {
+      const root = document.getElementById('root');
+      if (!root) return;
+      const contentH = root.scrollHeight;
+      const newH = Math.min(contentH + 60, Math.round(window.screen.availHeight * 0.75));
+      if (newH > window.innerHeight + 10) {
         window.electronAPI?.resizeChat?.(480, newH);
-      });
-      observer.observe(el);
-      return () => observer.disconnect();
-    }
+      }
+    });
 
-    // Final resize when done
-    if (state === 'done' || state === 'error') {
-      const contentH = contentRef.current?.scrollHeight || document.documentElement.scrollHeight;
+    return () => cancelAnimationFrame(raf);
+  }, [messages, state]);
+
+  // ── Final resize when done ──
+  useEffect(() => {
+    if (state !== 'done' && state !== 'error') return;
+
+    requestAnimationFrame(() => {
+      const root = document.getElementById('root');
+      if (!root) return;
+      const contentH = root.scrollHeight;
       const newH = Math.min(contentH + 60, Math.round(window.screen.availHeight * 0.75));
       window.electronAPI?.resizeChat?.(480, Math.max(300, newH));
-    }
+    });
   }, [state]);
 
   // ── Keyboard ──
@@ -192,7 +202,6 @@ export default function GlassCanvasApp() {
             {(state === 'streaming' || state === 'done') && messages.length > 0 && (
               <motion.div
                 key="conversation"
-                ref={contentRef}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}

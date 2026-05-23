@@ -20,7 +20,7 @@ export default function Markdown({ children }: Props) {
               <code
                 className="px-1 py-0.5 rounded text-[0.9em]"
                 style={{
-                  background: 'rgba(140,100,220,0.12)',
+                  background: 'rgba(90,200,250,0.08)',
                   fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
                 }}
                 {...props}

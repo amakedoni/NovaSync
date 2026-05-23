@@ -3,54 +3,58 @@
 /* ── NovaSync Design Tokens — Soft/Organic Palette ── */
 
 :root {
-  --bg-primary: #0d0820;
-  --bg-secondary: #1a1035;
-  --bg-tertiary: #251845;
-  --text-primary: #f0e8ff;
-  --text-secondary: #b8a0d8;
-  --text-tertiary: #8d7aaf;
-  --accent: #a78bfa;
-  --accent-strong: #7c3aed;
-  --accent-glow: rgba(167, 139, 250, 0.3);
-  --border-subtle: rgba(140, 100, 220, 0.06);
-  --border-input: rgba(140, 100, 220, 0.10);
-  --border-focus: rgba(167, 139, 250, 0.30);
-  --surface-hover: rgba(140, 100, 220, 0.08);
-  --surface-active: rgba(140, 100, 220, 0.12);
-  --error: #f87171;
-  --error-bg: rgba(255, 130, 130, 0.10);
-  --success: #34d399;
-  --radius-window: 24px;
+  /* ── macOS System + Liquid Glass Palette ── */
+  --bg-primary: #1c1c1e;
+  --bg-secondary: #2c2c2e;
+  --bg-tertiary: #3a3a3c;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+  --text-tertiary: #7c7c80;
+  --accent: #5AC8FA;
+  --accent-strong: #3AA8DA;
+  --accent-glow: rgba(90, 200, 250, 0.25);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-input: rgba(255, 255, 255, 0.10);
+  --border-focus: rgba(90, 200, 250, 0.25);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-active: rgba(255, 255, 255, 0.10);
+  --error: #ff453a;
+  --error-bg: rgba(255, 69, 58, 0.10);
+  --success: #30d158;
+  --radius-window: 22px;
   --radius-card: 16px;
-  --radius-input: 12px;
-  --radius-pill: 20px;
+  --radius-input: 22px;
+  --radius-pill: 15px;
   --radius-button: 14px;
-  --shadow-window: 0 25px 60px rgba(80, 40, 160, 0.20);
-  --shadow-button: 0 0 12px rgba(167, 139, 250, 0.30);
-  --shadow-input: 0 0 16px rgba(167, 139, 250, 0.08);
-  --shadow-dropdown: 0 12px 32px rgba(0, 0, 0, 0.50);
+  --shadow-window: 0 20px 50px rgba(0, 0, 0, 0.55);
+  --shadow-button: 0 0 12px rgba(90, 200, 250, 0.25);
+  --shadow-input: 0 0 16px rgba(90, 200, 250, 0.06);
+  --shadow-dropdown: 0 12px 32px rgba(0, 0, 0, 0.55);
 }
 
 /* ── Light Mode Override ──────────────────────────── */
 
 @media (prefers-color-scheme: light) {
   :root {
-    --bg-primary: #faf8ff;
-    --bg-secondary: #f0eaf8;
-    --bg-tertiary: #e5daf5;
-    --text-primary: #1a0d2e;
-    --text-secondary: #5a4080;
-    --text-tertiary: #7a5ea0;
-    --border-subtle: rgba(124, 58, 237, 0.06);
-    --border-input: rgba(124, 58, 237, 0.10);
-    --border-focus: rgba(124, 58, 237, 0.30);
-    --surface-hover: rgba(124, 58, 237, 0.06);
-    --surface-active: rgba(124, 58, 237, 0.10);
-    --error-bg: rgba(255, 130, 130, 0.08);
-    --shadow-window: 0 25px 60px rgba(80, 40, 160, 0.12);
-    --shadow-button: 0 0 14px rgba(124, 58, 237, 0.20);
-    --shadow-input: 0 0 16px rgba(124, 58, 237, 0.05);
-    --shadow-dropdown: 0 12px 32px rgba(80, 40, 160, 0.15);
+    --bg-primary: #f5f5f7;
+    --bg-secondary: #e8e8ed;
+    --bg-tertiary: #dcdce0;
+    --text-primary: #1c1c1e;
+    --text-secondary: #636366;
+    --text-tertiary: #7c7c80;
+    --accent: #0077B6;
+    --accent-strong: #005E8C;
+    --accent-glow: rgba(0, 119, 182, 0.25);
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --border-input: rgba(0, 0, 0, 0.10);
+    --border-focus: rgba(90, 200, 250, 0.35);
+    --surface-hover: rgba(0, 0, 0, 0.04);
+    --surface-active: rgba(0, 0, 0, 0.08);
+    --error-bg: rgba(255, 69, 58, 0.08);
+    --shadow-window: 0 20px 50px rgba(0, 0, 0, 0.12);
+    --shadow-button: 0 0 14px rgba(90, 200, 250, 0.15);
+    --shadow-input: 0 0 16px rgba(90, 200, 250, 0.04);
+    --shadow-dropdown: 0 12px 32px rgba(0, 0, 0, 0.12);
   }
 }
 

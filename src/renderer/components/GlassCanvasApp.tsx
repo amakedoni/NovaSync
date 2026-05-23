@@ -61,7 +61,7 @@ export default function GlassCanvasApp() {
   // ── Resize window on state change ──
   useEffect(() => {
     if (state === 'empty') {
-      window.electronAPI?.resizeChat?.(480, 120);
+      window.electronAPI?.resizeChat?.(480, 90);
     } else {
       window.electronAPI?.resizeChat?.(480, 520);
     }

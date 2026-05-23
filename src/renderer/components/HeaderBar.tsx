@@ -34,7 +34,7 @@ export default function HeaderBar({ state, onNewChat, onOpenHistory, onClose }: 
         display: 'flex',
         alignItems: 'center',
         justifyContent: showBranding ? 'space-between' : 'center',
-        padding: showBranding ? '12px 18px' : '5px 16px 0',
+        padding: showBranding ? '12px 18px' : '4px 16px 0',
         borderBottom: showBranding ? '0.5px solid var(--border-subtle)' : 'none',
         flexShrink: 0,
         position: 'relative',

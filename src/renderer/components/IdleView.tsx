@@ -23,10 +23,10 @@ export default function IdleView({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        padding: '10px 18px 12px',
+        padding: '6px 18px 4px',
         position: 'relative',
         zIndex: 1,
-        gap: 6,
+        gap: 4,
       }}
     >
       {/* Input row: field + separator + model + mode */}
@@ -55,10 +55,6 @@ export default function IdleView({
         <ModeSelector selected={mode} onSelect={onModeSelect} />
       </div>
 
-      {/* Hint */}
-      <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.18)' }}>
-        Enter to send · Esc to close
-      </span>
     </div>
   );
 }

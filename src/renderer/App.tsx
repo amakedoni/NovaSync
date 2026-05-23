@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import ChatBubble from './components/ChatBubble';
+import GlassCanvasApp from './components/GlassCanvasApp';
 import HistoryWindow from './components/HistoryWindow';
 
 export default function App() {
@@ -12,5 +12,5 @@ export default function App() {
     return <HistoryWindow />;
   }
 
-  return <ChatBubble />;
+  return <GlassCanvasApp />;
 }

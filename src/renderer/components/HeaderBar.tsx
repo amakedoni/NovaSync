@@ -10,22 +10,22 @@ interface Props {
   onClose: () => void;
 }
 
-const spring = { type: 'spring' as const, stiffness: 200, damping: 24 };
+const spring = { type: 'spring' as const, stiffness: 300, damping: 26 };
 
 const btnBase: React.CSSProperties = {
-  width: 24,
-  height: 24,
-  borderRadius: 7,
+  width: 26,
+  height: 26,
+  borderRadius: 'var(--radius-sm)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   border: 'none',
   cursor: 'pointer',
-  background: 'rgba(255,255,255,0.04)',
-  color: 'var(--text-tertiary)',
+  background: 'transparent',
+  color: 'var(--text-faint)',
   fontFamily: 'inherit',
   flexShrink: 0,
-  transition: 'background 0.15s ease',
+  transition: 'background 0.15s ease, color 0.15s ease',
 };
 
 export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onOpenHistory, onOpenSettings, onClose }: Props) {
@@ -37,95 +37,96 @@ export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onO
         display: 'flex',
         alignItems: 'center',
         justifyContent: showBranding ? 'space-between' : 'center',
-        padding: showBranding ? '10px 18px' : '4px 16px 0',
-        borderBottom: showBranding ? '0.5px solid var(--border-subtle)' : 'none',
+        padding: showBranding ? '10px 16px' : '6px 16px 0',
+        borderBottom: showBranding ? '1px solid var(--border-subtle)' : 'none',
         flexShrink: 0,
         position: 'relative',
         zIndex: 1,
+        minHeight: showBranding ? 46 : 20,
       }}
     >
-      {/* Drag handle (only when no branding) */}
+      {/* Drag handle — idle only */}
       {!showBranding && (
-        <div style={{ width: 24, height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.08)' }} />
+        <div style={{ width: 22, height: 3, borderRadius: 2, background: 'var(--surface-active)' }} />
       )}
 
-      {/* Branding (only in non-IDLE states) */}
+      {/* Branding */}
       <AnimatePresence>
         {showBranding && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+            transition={{ duration: 0.15 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10 }}
           >
-            {/* Dot indicator */}
+            {/* Logo — orange filled */}
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
-              transition={{ ...spring, duration: undefined }}
+              transition={spring}
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
+                width: 20,
+                height: 20,
+                borderRadius: 5,
                 flexShrink: 0,
-                background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
-                boxShadow: state === 'streaming'
-                  ? '0 0 10px var(--accent-glow)'
-                  : '0 0 6px rgba(90,200,250,0.2)',
-                transition: 'box-shadow 0.3s ease',
+                background: 'var(--accent)',
+                color: 'var(--bg-deep)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 9,
+                fontWeight: 700,
               }}
-            />
-            {/* Name */}
+            >
+              N
+            </motion.div>
             <motion.span
-              initial={{ opacity: 0, x: -8 }}
+              initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -8 }}
-              transition={{ ...spring, delay: 0.08, duration: undefined }}
-              style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}
+              exit={{ opacity: 0, x: -6 }}
+              transition={{ ...spring, delay: 0.06 }}
+              style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}
             >
               NovaSync
             </motion.span>
-            {/* Mode badge */}
             {modeLabel && modeLabel !== 'Chat' && (
               <motion.span
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ delay: 0.12 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ delay: 0.08 }}
                 style={{
-                  fontSize: 9,
-                  fontWeight: 500,
-                  color: 'var(--accent)',
-                  background: 'rgba(90,200,250,0.10)',
-                  padding: '1px 6px',
-                  borderRadius: 8,
+                  fontSize: 9, fontWeight: 500, color: 'var(--text-tertiary)',
+                  background: 'var(--surface-subtle)', padding: '2px 7px', borderRadius: 3,
                 }}
               >
                 {modeLabel}
               </motion.span>
             )}
-            {/* Status: streaming */}
             {state === 'streaming' && (
               <motion.span
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 0.8 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ delay: 0.16 }}
-                style={{ fontSize: 9, color: 'var(--accent)' }}
+                transition={{ delay: 0.1 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: 'var(--accent)', fontWeight: 500 }}
               >
-                ● streaming
+                <span style={{
+                  width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)',
+                  animation: 'breathe-cursor 1.5s ease-in-out infinite',
+                }} />
+                streaming
               </motion.span>
             )}
-            {/* Model label */}
             {modelLabel && (
               <motion.span
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 0.5 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ delay: 0.2 }}
-                style={{ fontSize: 9, color: 'var(--text-tertiary)' }}
+                transition={{ delay: 0.14 }}
+                style={{ fontSize: 9, color: 'var(--text-muted)' }}
               >
                 {modelLabel}
               </motion.span>
@@ -134,33 +135,45 @@ export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onO
         )}
       </AnimatePresence>
 
-      {/* Action buttons (only with branding) */}
+      {/* Action buttons */}
       {showBranding && (
-        <div style={{ display: 'flex', gap: 4 }}>
+        <div style={{ display: 'flex', gap: 2 }}>
           {onNewChat && (
-            <button onClick={onNewChat} title="New chat" aria-label="New chat" style={btnBase}>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+            <button onClick={onNewChat} title="New chat" aria-label="New chat" style={btnBase}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-faint)'; }}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
               </svg>
             </button>
           )}
-          <button onClick={onOpenHistory} title="History" aria-label="History" style={btnBase}>
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-              <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1" />
-              <path d="M6 3v3l2 1" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+          <button onClick={onOpenHistory} title="History" aria-label="History" style={btnBase}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-faint)'; }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.1" />
+              <path d="M6 3.5v2.5l1.5 1" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
           {onOpenSettings && (
-            <button onClick={onOpenSettings} title="Settings" aria-label="Settings" style={btnBase}>
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1" />
-                <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M3.05 3.05l1.06 1.06M9.9 9.9l1.06 1.06M3.05 10.95l1.06-1.06M9.9 4.1l1.06-1.06" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+            <button onClick={onOpenSettings} title="Settings" aria-label="Settings" style={btnBase}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-faint)'; }}
+            >
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                <circle cx="7" cy="7" r="2.2" stroke="currentColor" strokeWidth="1.1" />
+                <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M3.05 3.05l1.06 1.06M9.9 9.9l1.06 1.06M3.05 10.95l1.06-1.06M9.9 4.1l1.06-1.06" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
               </svg>
             </button>
           )}
-          <button onClick={onClose} title="Close (Esc)" aria-label="Close" style={btnBase}>
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+          <button onClick={onClose} title="Close (Esc)" aria-label="Close" style={btnBase}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-faint)'; }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
             </svg>
           </button>
         </div>

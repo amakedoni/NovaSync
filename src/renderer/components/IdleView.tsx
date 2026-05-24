@@ -21,10 +21,11 @@ export default function IdleView({
   return (
     <div
       style={{
+        flex: 1,
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        padding: '16px 20px',
+        padding: '0 20px',
         position: 'relative',
         zIndex: 1,
       }}
@@ -53,8 +54,9 @@ export default function IdleView({
         display: 'flex',
         alignItems: 'center',
         gap: 8,
+        height: 42,
         padding: '0 8px 0 14px',
-        borderRadius: 'var(--radius-input)',
+        borderRadius: 10,
         background: 'var(--surface-subtle)',
         border: '1px solid var(--border-input)',
       }}>

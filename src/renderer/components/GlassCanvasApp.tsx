@@ -22,6 +22,7 @@ export default function GlassCanvasApp() {
   const [needsKey, setNeedsKey] = useState(false);
   const [visible, setVisible] = useState(true);
   const [shimmerKey, setShimmerKey] = useState(0);
+  const [updateReady, setUpdateReady] = useState(false);
 
   const state = useChatStore((s) => s.state);
   const model = useChatStore((s) => s.model);
@@ -53,7 +54,18 @@ export default function GlassCanvasApp() {
   // ── IPC ──
   useEffect(() => {
     const unsubs: (() => void)[] = [];
-    const r0 = window.electronAPI?.onChatOpened?.(() => { setVisible(true); setQuery(''); });
+    const r0 = window.electronAPI?.onChatOpened?.(async () => {
+      setVisible(true);
+      setQuery('');
+      // Auto-read clipboard if setting enabled
+      try {
+        const s = await window.electronAPI?.getSettings();
+        if (s && s.autoReadClipboard) {
+          const clip = await window.electronAPI?.readClipboard();
+          if (clip) setQuery(clip.slice(0, 500));
+        }
+      } catch { /* ignore */ }
+    });
     if (r0) unsubs.push(r0);
     const r1 = window.electronAPI?.onResponseChunk?.((chunk: string) => { useChatStore.getState().appendChunk(chunk); });
     if (r1) unsubs.push(r1);
@@ -67,6 +79,8 @@ export default function GlassCanvasApp() {
     if (r5) unsubs.push(r5);
     const r6 = window.electronAPI?.onResponseReset?.(() => { useChatStore.getState().reset(); });
     if (r6) unsubs.push(r6);
+    const r7 = window.electronAPI?.onUpdateReady?.(() => { setUpdateReady(true); });
+    if (r7) unsubs.push(r7);
     window.electronAPI?.chatReady?.();
     return () => { unsubs.forEach((fn) => fn()); };
   }, []);
@@ -181,8 +195,34 @@ export default function GlassCanvasApp() {
             modeLabel={headerState !== 'idle' ? currentModeLabel : undefined}
             onNewChat={hasConversation ? newChat : undefined}
             onOpenHistory={() => window.electronAPI?.openHistory?.()}
+            onOpenSettings={() => window.electronAPI?.openSettings?.()}
             onClose={close}
           />
+
+          {/* ── Update banner ── */}
+          {updateReady && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              style={{
+                margin: '0 18px', padding: '8px 14px', borderRadius: 12,
+                background: 'rgba(90,200,250,0.10)', border: '1px solid var(--border-focus)',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}
+            >
+              <span style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 600 }}>Update ready — restart to install</span>
+              <button
+                onClick={() => window.electronAPI?.installUpdate?.()}
+                style={{
+                  padding: '3px 12px', borderRadius: 8, fontSize: 10, fontWeight: 600,
+                  border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                  background: 'var(--accent)', color: '#fff',
+                }}
+              >
+                Restart
+              </button>
+            </motion.div>
+          )}
 
           {/* ── Content area with morph transitions ── */}
           <motion.div layout style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

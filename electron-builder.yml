@@ -7,8 +7,9 @@ directories:
   output: release
 
 files:
-  - dist-electron/**/*
-  - dist/renderer/**/*
+  - out/**/*
+
+asar: true
 
 win:
   target:
@@ -33,3 +34,8 @@ linux:
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+
+publish:
+  provider: github
+  owner: amakedoni
+  repo: NovaSync

@@ -60,6 +60,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveApiKey: (provider: string, key: string) =>
     ipcRenderer.send('api-key:save', { provider, key }),
 
+  getApiKeys: () => ipcRenderer.invoke('api-keys:get'),
+
   openUrl: (url: string) => {
     if (url.startsWith('http://') || url.startsWith('https://')) {
       ipcRenderer.send('url:open', url);
@@ -68,6 +70,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   copyToClipboard: (text: string) => ipcRenderer.send('clipboard:write', text),
 
+  readClipboard: () => ipcRenderer.invoke('clipboard:read'),
+
   // ── History ───────────────────────────────────
   openHistory: () => ipcRenderer.send('history:open'),
   closeHistory: () => ipcRenderer.send('history:close'),
@@ -75,7 +79,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
   clearHistory: () => ipcRenderer.invoke('history:clear'),
 
   // ── Settings ──────────────────────────────────
+  openSettings: () => ipcRenderer.send('settings:open'),
+  closeSettings: () => ipcRenderer.send('settings:close'),
   getSettings: () => ipcRenderer.invoke('settings:get'),
   saveSettings: (settings: Record<string, unknown>) =>
     ipcRenderer.invoke('settings:save', settings),
+
+  // ── Auto-update ───────────────────────────────
+  installUpdate: () => ipcRenderer.send('update:install'),
+
+  onUpdateReady: (callback: () => void) => {
+    const handler = (_event: IpcRendererEvent) => callback();
+    ipcRenderer.on('chat:update-ready', handler);
+    return () => { ipcRenderer.removeListener('chat:update-ready', handler); };
+  },
 });

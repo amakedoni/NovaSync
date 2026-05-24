@@ -1,8 +1,10 @@
 import { app, BrowserWindow, globalShortcut, Tray, Menu, nativeImage } from 'electron';
 import { createChatWindow, getChatWindow, showChatWindow } from './windows/overlay';
 import { createHistoryWindow } from './windows/response';
+import { createSettingsWindow } from './windows/settings';
 import { registerIpcHandlers } from './ipc/handlers';
 import { loadSettings, saveSettings } from './store/settings';
+import { initAutoUpdater, stopAutoUpdater } from './services/auto-updater';
 import path from 'path';
 
 const gotLock = app.requestSingleInstanceLock();
@@ -83,7 +85,14 @@ function tryRegisterHotkey(): string | null {
 app.whenReady().then(() => {
   createChatWindow();
   createHistoryWindow();
+  createSettingsWindow();
   registerIpcHandlers();
+
+  // Apply auto-startup setting
+  const settings = loadSettings();
+  if (typeof settings.launchOnStartup === 'boolean') {
+    app.setLoginItemSettings({ openAtLogin: settings.launchOnStartup });
+  }
 
   const registeredHotkey = tryRegisterHotkey();
   if (!registeredHotkey) {
@@ -94,6 +103,11 @@ app.whenReady().then(() => {
   }
 
   createTray();
+
+  // Auto-updater (only in packaged app)
+  if (app.isPackaged) {
+    initAutoUpdater(getChatWindow);
+  }
 
   if (process.platform === 'darwin') {
     app.dock?.hide();

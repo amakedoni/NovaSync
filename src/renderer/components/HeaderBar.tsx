@@ -6,6 +6,7 @@ interface Props {
   modeLabel?: string;
   onNewChat?: () => void;
   onOpenHistory: () => void;
+  onOpenSettings?: () => void;
   onClose: () => void;
 }
 
@@ -27,7 +28,7 @@ const btnBase: React.CSSProperties = {
   transition: 'background 0.15s ease',
 };
 
-export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onOpenHistory, onClose }: Props) {
+export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onOpenHistory, onOpenSettings, onClose }: Props) {
   const showBranding = state !== 'idle';
 
   return (
@@ -149,6 +150,14 @@ export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onO
               <path d="M6 3v3l2 1" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
+          {onOpenSettings && (
+            <button onClick={onOpenSettings} title="Settings" aria-label="Settings" style={btnBase}>
+              <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+                <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1" />
+                <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M3.05 3.05l1.06 1.06M9.9 9.9l1.06 1.06M3.05 10.95l1.06-1.06M9.9 4.1l1.06-1.06" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+              </svg>
+            </button>
+          )}
           <button onClick={onClose} title="Close (Esc)" aria-label="Close" style={btnBase}>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
               <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />

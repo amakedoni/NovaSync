@@ -73,6 +73,10 @@ export function getApiKey(provider: string): string | undefined {
   return readStore().apiKeys[provider];
 }
 
+export function getApiKeys(): Record<string, string> {
+  return { ...readStore().apiKeys };
+}
+
 export function saveApiKey(provider: string, key: string): void {
   const store = readStore();
   store.apiKeys[provider] = key;

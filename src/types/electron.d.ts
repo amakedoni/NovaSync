@@ -13,14 +13,20 @@ interface ElectronAPI {
   onApiKeySaved: (callback: () => void) => Unsubscriber;
   onResponseReset: (callback: () => void) => Unsubscriber;
   saveApiKey: (provider: string, key: string) => void;
+  getApiKeys: () => Promise<Record<string, string>>;
   openUrl: (url: string) => void;
   copyToClipboard: (text: string) => void;
+  readClipboard: () => Promise<string>;
   openHistory: () => void;
   closeHistory: () => void;
   getHistory: () => Promise<{ id: string; query: string; model: string; response: string; timestamp: number }[]>;
   clearHistory: () => Promise<boolean>;
+  openSettings: () => void;
+  closeSettings: () => void;
   getSettings: () => Promise<Record<string, unknown>>;
-  saveSettings: (settings: Record<string, unknown>) => Promise<boolean>;
+  saveSettings: (settings: Record<string, unknown>) => Promise<Record<string, unknown>>;
+  installUpdate: () => void;
+  onUpdateReady: (callback: () => void) => Unsubscriber;
 }
 
 interface Window {

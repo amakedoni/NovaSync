@@ -34,10 +34,10 @@ const providers: Record<string, ProviderConfig> = {
       temperature: 0.7,
       max_tokens: 4096,
     }),
-    parseChunk: (data) => {
+    parseChunk: (data: Record<string, unknown>) => {
       // OpenAI-compatible SSE format
-      const choice = data.choices?.[0];
-      return choice?.delta?.content || null;
+      const choices = data.choices as Array<{ delta?: { content?: string } }> | undefined;
+      return choices?.[0]?.delta?.content || null;
     },
   },
 
@@ -54,9 +54,9 @@ const providers: Record<string, ProviderConfig> = {
       temperature: 0.7,
       max_tokens: 4096,
     }),
-    parseChunk: (data) => {
-      const choice = data.choices?.[0];
-      return choice?.delta?.content || null;
+    parseChunk: (data: Record<string, unknown>) => {
+      const choices = data.choices as Array<{ delta?: { content?: string } }> | undefined;
+      return choices?.[0]?.delta?.content || null;
     },
   },
 
@@ -83,10 +83,11 @@ const providers: Record<string, ProviderConfig> = {
         stream: true,
       };
     },
-    parseChunk: (data) => {
+    parseChunk: (data: Record<string, unknown>) => {
       // Anthropic SSE format
       if (data.type === 'content_block_delta') {
-        return data.delta?.text || null;
+        const delta = data.delta as { text?: string } | undefined;
+        return delta?.text || null;
       }
       return null;
     },

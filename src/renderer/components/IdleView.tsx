@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ModelSelector, { type Model } from './ModelSelector';
 import ModeSelector from './ModeSelector';
 import InputBar from './InputBar';
@@ -20,6 +20,18 @@ export default function IdleView({
   mode, onModeSelect,
 }: Props) {
   const [focused, setFocused] = useState(false);
+  const [clipText, setClipText] = useState('');
+
+  useEffect(() => {
+    window.electronAPI?.readClipboard().then((t) => t && setClipText(t.slice(0, 200)));
+  }, []);
+
+  const handlePaste = () => {
+    if (clipText) {
+      const combined = query ? `${query}\n\n${clipText}` : clipText;
+      onQueryChange(combined.slice(0, 2000));
+    }
+  };
 
   return (
     <div
@@ -58,15 +70,35 @@ export default function IdleView({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
+        {clipText && (
+          <button
+            onClick={handlePaste}
+            title="Paste from clipboard"
+            aria-label="Paste from clipboard"
+            style={{
+              width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '0.5px solid var(--border-subtle)',
+              background: 'var(--surface-hover)',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer', fontSize: 11,
+            }}
+          >
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+              <rect x="4" y="4" width="10" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
+              <path d="M2 12V3a1 1 0 011-1h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+            </svg>
+          </button>
+        )}
         <div style={{ width: '0.5px', height: 18, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
         <ModelSelector models={models} selected={model} onSelect={onModelSelect} />
         <ModeSelector selected={mode} onSelect={onModeSelect} />
       </div>
 
       {/* Hint */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
         <span style={{ fontSize: 8, color: 'var(--text-tertiary)' }}>
-          Enter to send · Esc to close
+          Enter to send · Esc to close{clipText ? ' · 📋 to paste' : ''}
         </span>
       </div>
     </div>

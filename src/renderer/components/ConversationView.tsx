@@ -24,31 +24,31 @@ export default function ConversationView({ isThinking, onCopy, onRetry, onFollow
       {/* Generating indicator */}
       {state === 'streaming' && !isThinking && (
         <div style={{
-          borderTop: '0.5px solid var(--border-subtle)',
+          borderTop: '1px solid var(--border-subtle)',
           padding: '8px 18px',
           display: 'flex',
           justifyContent: 'center',
         }}>
-          <span style={{ fontSize: 9, color: 'var(--text-tertiary)' }}>generating...</span>
+          <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>generating...</span>
         </div>
       )}
 
       {/* Thinking disabled input */}
       {state === 'streaming' && isThinking && (
         <div style={{
-          borderTop: '0.5px solid var(--border-subtle)',
+          borderTop: '1px solid var(--border-subtle)',
           padding: '8px 18px 10px',
         }}>
           <div style={{
             height: 38,
-            borderRadius: 22,
-            background: 'rgba(60, 60, 64, 0.35)',
-            border: '0.5px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: 6,
+            background: 'var(--surface-subtle)',
+            border: '1px solid var(--border-input)',
             display: 'flex',
             alignItems: 'center',
             padding: '0 16px',
           }}>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)' }}>Waiting for response...</span>
+            <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>Waiting for response...</span>
           </div>
         </div>
       )}

@@ -37,12 +37,12 @@ export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onO
         display: 'flex',
         alignItems: 'center',
         justifyContent: showBranding ? 'space-between' : 'center',
-        padding: showBranding ? '10px 16px' : '6px 16px 0',
+        padding: showBranding ? '10px 16px' : '2px 16px 0',
         borderBottom: showBranding ? '1px solid var(--border-subtle)' : 'none',
         flexShrink: 0,
         position: 'relative',
         zIndex: 1,
-        minHeight: showBranding ? 46 : 20,
+        minHeight: showBranding ? 46 : 10,
       }}
     >
       {/* Drag handle — idle only */}

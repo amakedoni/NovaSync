@@ -24,8 +24,7 @@ export default function IdleView({
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        flex: 1,
-        padding: '0 20px',
+        padding: '9px 20px 0',
         position: 'relative',
         zIndex: 1,
       }}

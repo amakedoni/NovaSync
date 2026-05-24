@@ -12,17 +12,17 @@ function getUrl(): string {
 export function createChatWindow(): BrowserWindow {
   chatWindow = new BrowserWindow({
     width: 520,
-    height: 180,
+    height: 80,
     minWidth: 360,
-    minHeight: 120,
-    transparent: true,
+    minHeight: 80,
+    transparent: false,
     frame: false,
     resizable: true,
     alwaysOnTop: true,
     skipTaskbar: true,
     show: false,
     hasShadow: true,
-    backgroundColor: '#00000000',
+    backgroundColor: '#1a1a1c',
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,

@@ -82,7 +82,7 @@ export default function GlassCanvasApp() {
     prevStateRef.current = state;
 
     if (state === 'empty') {
-      window.electronAPI?.resizeChat?.(520, 100);
+      window.electronAPI?.resizeChat?.(520, 85);
       return;
     }
 

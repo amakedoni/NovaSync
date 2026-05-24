@@ -21,10 +21,11 @@ export default function IdleView({
   return (
     <div
       style={{
+        flex: 1,
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        padding: '22px 20px 0',
+        padding: '0 20px',
         position: 'relative',
         zIndex: 1,
       }}

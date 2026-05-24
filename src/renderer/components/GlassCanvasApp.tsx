@@ -15,13 +15,13 @@ const MODELS = [
   { id: 'claude-haiku-4-5', label: 'Claude Haiku 4.5' },
 ];
 
-const morphSpring = { type: 'spring' as const, stiffness: 200, damping: 24 };
+// Refined spring — snappier, more premium feel
+const morphSpring = { type: 'spring' as const, stiffness: 280, damping: 26 };
 
 export default function GlassCanvasApp() {
   const [query, setQuery] = useState('');
   const [needsKey, setNeedsKey] = useState(false);
   const [visible, setVisible] = useState(true);
-  const [shimmerKey, setShimmerKey] = useState(0);
   const [updateReady, setUpdateReady] = useState(false);
 
   const state = useChatStore((s) => s.state);
@@ -41,23 +41,12 @@ export default function GlassCanvasApp() {
   const currentModelLabel = MODELS.find((m) => m.id === model)?.label || model;
   const currentModeLabel = MODES.find((m) => m.id === mode)?.label || 'Chat';
 
-  // ── Trigger shimmer on state transitions ──
-  const prevStateRef2 = useRef(state);
-  useEffect(() => {
-    const prev = prevStateRef2.current;
-    prevStateRef2.current = state;
-    if (prev !== state && (prev === 'empty' || state === 'empty')) {
-      setShimmerKey((k) => k + 1);
-    }
-  }, [state]);
-
   // ── IPC ──
   useEffect(() => {
     const unsubs: (() => void)[] = [];
     const r0 = window.electronAPI?.onChatOpened?.(async () => {
       setVisible(true);
       setQuery('');
-      // Auto-read clipboard if setting enabled
       try {
         const s = await window.electronAPI?.getSettings();
         if (s && s.autoReadClipboard) {
@@ -113,7 +102,6 @@ export default function GlassCanvasApp() {
       const currentH = window.innerHeight;
       const maxH = Math.round(window.screen.availHeight * 0.75);
 
-      // Content exceeds window — grow by small step (max 40px per tick)
       if (contentH > currentH) {
         const stepH = Math.min(currentH + 40, contentH + 20, maxH);
         if (stepH > currentH + 10) {
@@ -188,7 +176,7 @@ export default function GlassCanvasApp() {
   return (
     <AnimatePresence>
       {visible && (
-        <WindowShell visible={visible} shimmerKey={shimmerKey}>
+        <WindowShell visible={visible}>
           <HeaderBar
             state={headerState}
             modelLabel={currentModelLabel}
@@ -199,24 +187,24 @@ export default function GlassCanvasApp() {
             onClose={close}
           />
 
-          {/* ── Update banner ── */}
+          {/* Update banner */}
           {updateReady && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               style={{
-                margin: '0 18px', padding: '8px 14px', borderRadius: 12,
-                background: 'rgba(90,200,250,0.10)', border: '1px solid var(--border-focus)',
+                margin: '0 16px', padding: '8px 14px', borderRadius: 6,
+                background: 'var(--accent-subtle)', border: '1px solid rgba(232,120,74,0.15)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}
             >
-              <span style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 600 }}>Update ready — restart to install</span>
+              <span style={{ fontSize: 10.5, color: 'var(--accent)', fontWeight: 600 }}>Update ready — restart to install</span>
               <button
                 onClick={() => window.electronAPI?.installUpdate?.()}
                 style={{
-                  padding: '3px 12px', borderRadius: 8, fontSize: 10, fontWeight: 600,
+                  padding: '4px 14px', borderRadius: 6, fontSize: 10.5, fontWeight: 600,
                   border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                  background: 'var(--accent)', color: '#fff',
+                  background: 'var(--accent)', color: 'var(--bg-deep)',
                 }}
               >
                 Restart
@@ -224,7 +212,7 @@ export default function GlassCanvasApp() {
             </motion.div>
           )}
 
-          {/* ── Content area with morph transitions ── */}
+          {/* Content area */}
           <motion.div layout style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <AnimatePresence mode="wait">
             {state === 'empty' && (
@@ -232,9 +220,8 @@ export default function GlassCanvasApp() {
                 key="idle"
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ ...morphSpring, duration: undefined }}
-                style={{ willChange: 'transform, opacity' }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={morphSpring}
               >
                 <IdleView
                   query={query}
@@ -252,11 +239,11 @@ export default function GlassCanvasApp() {
             {(state === 'streaming' || state === 'done') && messages.length > 0 && (
               <motion.div
                 key="conversation"
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ ...morphSpring, duration: undefined }}
-                style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', willChange: 'transform, opacity' }}
+                transition={morphSpring}
+                style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
               >
                 <ConversationView
                   isThinking={isThinking}
@@ -270,32 +257,32 @@ export default function GlassCanvasApp() {
             {showError && (
               <motion.div
                 key="error"
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ ...morphSpring, duration: undefined }}
+                transition={morphSpring}
               >
-                <ErrorState message={errorMessage} onRetry={retry} />
+                <ErrorState message={errorMessage} onRetry={retry} onSettings={() => window.electronAPI?.openSettings?.()} />
               </motion.div>
             )}
           </AnimatePresence>
           </motion.div>
 
-          {/* Error with conversation — retry/new chat buttons */}
+          {/* Error with conversation — retry/new chat */}
           {showError && hasConversation && (
             <div style={{
               display: 'flex', justifyContent: 'center', gap: 8,
-              padding: '10px 12px', borderTop: '0.5px solid var(--border-subtle)',
+              padding: '10px 14px', borderTop: '1px solid var(--border-subtle)',
             }}>
               <button onClick={retry} style={{
-                padding: '6px 18px', borderRadius: 20, fontSize: 11, fontWeight: 600,
-                border: '0.5px solid rgba(90,200,250,0.2)', background: 'var(--surface-active)',
-                color: 'var(--accent)', cursor: 'pointer', fontFamily: 'inherit',
+                padding: '7px 16px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+                border: 'none', background: 'var(--accent)', color: 'var(--bg-deep)',
+                cursor: 'pointer', fontFamily: 'inherit',
               }}>Retry</button>
               <button onClick={newChat} style={{
-                padding: '6px 18px', borderRadius: 20, fontSize: 11, fontWeight: 500,
-                border: '0.5px solid var(--border-subtle)', background: 'var(--surface-hover)',
-                color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit',
+                padding: '7px 16px', borderRadius: 6, fontSize: 11, fontWeight: 500,
+                border: 'none', background: 'var(--surface-subtle)', color: 'var(--text-tertiary)',
+                cursor: 'pointer', fontFamily: 'inherit',
               }}>New Chat</button>
             </div>
           )}

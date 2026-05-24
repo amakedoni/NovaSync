@@ -31,7 +31,11 @@ export default function NovaMessage({ content, isStreaming }: Props) {
 
       <motion.div
         layout
-        style={{ flex: 1, minWidth: 0, color: 'var(--text-primary)', fontSize: 12, lineHeight: 1.6, wordBreak: 'break-word' }}
+        style={{
+          flex: 1, minWidth: 0, color: 'var(--text-primary)', fontSize: 12,
+          lineHeight: 1.6, wordBreak: 'break-word',
+          animation: isStreaming ? 'fade-up-blur 0.2s ease-out both' : 'none',
+        }}
       >
         {content ? (
           <ReactMarkdown

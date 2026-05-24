@@ -22,9 +22,10 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
 
   return (
     <motion.div
+      layout
       initial={{ opacity: 0, scale: 0.92, y: 12 }}
       animate={visible ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 12 }}
-      transition={spring}
+      transition={{ ...spring, duration: undefined }}
       style={{
         width: '100%',
         height: '100%',
@@ -33,6 +34,7 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
         position: 'relative',
         borderRadius: 'var(--radius-window)',
         overflow: 'hidden',
+        boxShadow: '0 20px 50px rgba(0,0,0,0.55)',
         ...style,
       }}
     >
@@ -41,12 +43,12 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(28, 28, 30, 0.50) 0%, rgba(22, 22, 24, 0.50) 100%)',
-          backdropFilter: 'blur(60px) saturate(1.5)',
-          WebkitBackdropFilter: 'blur(60px) saturate(1.5)',
+          background: 'linear-gradient(135deg, rgba(28, 28, 30, 0.55) 0%, rgba(22, 22, 24, 0.55) 100%)',
+          backdropFilter: 'blur(20px) saturate(1.2)',
+          WebkitBackdropFilter: 'blur(20px) saturate(1.2)',
           borderRadius: 'var(--radius-window)',
           border: '0.5px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.06) inset',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
@@ -56,7 +58,7 @@ export default function WindowShell({ children, visible, style, shimmerKey }: Pr
       <div style={{
         position: 'absolute', top: -40, right: -40, width: 140, height: 140,
         borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
-        background: 'radial-gradient(circle, rgba(90,200,250,0.05) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)',
       }} />
       <div style={{
         position: 'absolute', bottom: -30, left: '20%', width: 120, height: 70,

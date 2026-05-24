@@ -5,21 +5,22 @@ interface Props {
 }
 
 /**
- * Shared Markdown renderer used by both overlay (history previews)
- * and widget (response body). Styling mirrors NovaMessage.
+ * Shared Markdown renderer. Styling mirrors NovaMessage.
  */
 export default function Markdown({ children }: Props) {
   return (
     <ReactMarkdown
       components={{
-        p: ({ children: pChildren }) => <p className="mb-2 last:mb-0">{pChildren}</p>,
+        p: ({ children: pChildren }) => (
+          <p style={{ marginBottom: 8 }}>{pChildren}</p>
+        ),
         code: ({ className, children: codeChildren, ...props }) => {
           const isInline = !className;
           if (isInline) {
             return (
               <code
-                className="px-1 py-0.5 rounded text-[0.9em]"
                 style={{
+                  padding: '1px 6px', borderRadius: 4, fontSize: '0.9em',
                   background: 'rgba(90,200,250,0.08)',
                   fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
                 }}
@@ -31,10 +32,10 @@ export default function Markdown({ children }: Props) {
           }
           return (
             <pre
-              className="my-3 p-3.5 rounded-lg overflow-x-auto text-[11px] leading-relaxed"
               style={{
-                background: 'rgba(0,0,0,0.35)',
-                border: '1px solid var(--border-subtle)',
+                margin: '12px 0', padding: 14, borderRadius: 10, overflowX: 'auto',
+                fontSize: 11, lineHeight: 1.5,
+                background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-subtle)',
                 fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
               }}
             >
@@ -49,9 +50,15 @@ export default function Markdown({ children }: Props) {
             {aChildren}
           </a>
         ),
-        ul: ({ children: ulChildren }) => <ul className="pl-5 mb-2 list-disc">{ulChildren}</ul>,
-        ol: ({ children: olChildren }) => <ol className="pl-5 mb-2 list-decimal">{olChildren}</ol>,
-        li: ({ children: liChildren }) => <li className="mb-1">{liChildren}</li>,
+        ul: ({ children: ulChildren }) => (
+          <ul style={{ paddingLeft: 20, marginBottom: 8, listStyle: 'disc' }}>{ulChildren}</ul>
+        ),
+        ol: ({ children: olChildren }) => (
+          <ol style={{ paddingLeft: 20, marginBottom: 8, listStyle: 'decimal' }}>{olChildren}</ol>
+        ),
+        li: ({ children: liChildren }) => (
+          <li style={{ marginBottom: 4 }}>{liChildren}</li>
+        ),
       }}
     >
       {children}

@@ -22,7 +22,6 @@ export default function SettingsView({ onSaved }: Props) {
     const key = apiKey.trim();
     if (!key) return;
 
-    // Check prefix matches
     if (!key.startsWith(currentProvider.keyPrefix)) {
       setError(`Key should start with "${currentProvider.keyPrefix}"`);
       return;
@@ -47,38 +46,42 @@ export default function SettingsView({ onSaved }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-3.5 p-5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: 20 }}>
       {/* Header */}
-      <div className="flex items-center gap-2 mb-1">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
         <div
-          className="w-2 h-2 rounded-full flex-shrink-0"
           style={{
+            width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
             background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
             boxShadow: '0 0 8px var(--accent-glow)',
           }}
         />
-        <span className="text-xs font-semibold" style={{ color: 'var(--accent)' }}>Setup</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent)' }}>Setup</span>
       </div>
 
       {/* Provider tabs */}
       <div>
         <label
-          className="block text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-          style={{ color: 'var(--text-secondary)' }}
+          style={{
+            display: 'block', fontSize: 10, fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+            marginBottom: 6, color: 'var(--text-secondary)',
+          }}
         >
           Provider
         </label>
-        <div className="flex gap-1">
+        <div style={{ display: 'flex', gap: 4 }}>
           {PROVIDERS.map((p) => (
             <button
               key={p.id}
               onClick={() => { setProvider(p.id); setError(''); }}
-              className="flex-1 py-1.5 rounded-xl text-[10px] font-semibold border cursor-pointer transition-all"
               style={{
+                flex: 1, padding: '6px 0', borderRadius: 12, fontSize: 10, fontWeight: 600,
+                border: '0.5px solid',
+                cursor: 'pointer', fontFamily: 'inherit',
                 background: p.id === provider ? 'var(--surface-active)' : 'var(--surface-hover)',
                 borderColor: p.id === provider ? 'var(--border-focus)' : 'var(--border-subtle)',
                 color: p.id === provider ? 'var(--accent)' : 'var(--text-tertiary)',
-                fontFamily: 'inherit',
               }}
             >
               {p.label}
@@ -90,8 +93,11 @@ export default function SettingsView({ onSaved }: Props) {
       {/* API Key input */}
       <div>
         <label
-          className="block text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-          style={{ color: 'var(--text-secondary)' }}
+          style={{
+            display: 'block', fontSize: 10, fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+            marginBottom: 6, color: 'var(--text-secondary)',
+          }}
         >
           API Key
         </label>
@@ -102,35 +108,37 @@ export default function SettingsView({ onSaved }: Props) {
           onKeyDown={(e) => e.key === 'Enter' && handleSave()}
           placeholder={currentProvider.keyPrefix + '...'}
           autoFocus
-          className="w-full px-3 py-2.5 rounded-xl text-xs outline-none"
           style={{
-            background: 'rgba(0,0,0,0.2)',
+            width: '100%', padding: '10px 12px', borderRadius: 12, fontSize: 12, outline: 'none',
+            background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)',
             border: `1px solid ${error ? 'var(--error)' : 'var(--border-input)'}`,
-            color: 'var(--text-primary)',
             fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
           }}
         />
         {apiKey.length > 0 && !error && (
-          <span className="block text-right text-[9px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
+          <span style={{ display: 'block', textAlign: 'right', fontSize: 9, marginTop: 4, color: 'var(--text-tertiary)' }}>
             {apiKey.length} characters
           </span>
         )}
         {error && (
-          <span className="block text-right text-[9px] mt-1" style={{ color: 'var(--error)' }}>
+          <span style={{ display: 'block', textAlign: 'right', fontSize: 9, marginTop: 4, color: 'var(--error)' }}>
             {error}
           </span>
         )}
       </div>
 
       {/* Get key link */}
-      <div className="text-[10px] text-center" style={{ color: 'var(--text-tertiary)' }}>
+      <div style={{ fontSize: 10, textAlign: 'center', color: 'var(--text-tertiary)' }}>
         Get a key at{' '}
         <button
           onClick={() => window.electronAPI?.openUrl(currentProvider.getUrl)}
-          className="bg-transparent border-none p-0 underline cursor-pointer text-[10px]"
-          style={{ color: 'var(--accent)', fontFamily: 'inherit' }}
+          style={{
+            background: 'transparent', border: 'none', padding: 0,
+            textDecoration: 'underline', cursor: 'pointer', fontSize: 10,
+            color: 'var(--accent)', fontFamily: 'inherit',
+          }}
         >
-          {currentProvider.label} →
+          {currentProvider.label} &rarr;
         </button>
       </div>
 
@@ -138,19 +146,19 @@ export default function SettingsView({ onSaved }: Props) {
       <button
         onClick={handleSave}
         disabled={!apiKey.trim() || saving}
-        className="w-full py-2.5 rounded-2xl text-[13px] font-semibold border-none cursor-pointer transition-all"
         style={{
+          width: '100%', padding: '10px 0', borderRadius: 20, fontSize: 13, fontWeight: 600,
+          border: 'none', cursor: 'pointer', fontFamily: 'inherit',
           background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
           boxShadow: '0 0 16px var(--accent-glow)',
           color: '#fff',
-          fontFamily: 'inherit',
           opacity: !apiKey.trim() || saving ? 0.4 : 1,
         }}
       >
         {saving ? 'Saving...' : 'Save & Start'}
       </button>
 
-      <span className="text-[9px] text-center" style={{ color: 'var(--text-tertiary)' }}>
+      <span style={{ fontSize: 9, textAlign: 'center', color: 'var(--text-tertiary)' }}>
         Key is stored locally, sent only to the provider's API.
       </span>
     </div>

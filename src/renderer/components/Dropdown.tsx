@@ -117,12 +117,21 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
     transition: 'background 0.1s ease, color 0.1s ease',
   }), []);
 
+  const handleTriggerDown = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = 'scale(0.97)';
+  }, []);
+
+  const handleTriggerUp = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.transform = 'scale(1)';
+  }, []);
+
   const handleTriggerHover = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     if (!open) e.currentTarget.style.background = 'var(--surface-active)';
   }, [open]);
 
   const handleTriggerLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     if (!open) e.currentTarget.style.background = 'var(--surface-hover)';
+    e.currentTarget.style.transform = 'scale(1)';
   }, [open]);
 
   const handleItemMouseEnter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -150,6 +159,8 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={`Select: ${current?.label || selected}`}
+        onMouseDown={handleTriggerDown}
+        onMouseUp={handleTriggerUp}
         onMouseEnter={handleTriggerHover}
         onMouseLeave={handleTriggerLeave}
       >

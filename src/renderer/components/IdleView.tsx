@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import ModelSelector, { type Model } from './ModelSelector';
 import ModeSelector from './ModeSelector';
 import InputBar from './InputBar';
@@ -18,6 +19,8 @@ export default function IdleView({
   models, model, onModelSelect,
   mode, onModeSelect,
 }: Props) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <div
       style={{
@@ -42,7 +45,8 @@ export default function IdleView({
           background: 'rgba(60, 60, 64, 0.40)',
           backdropFilter: 'blur(16px) saturate(1.2)',
           WebkitBackdropFilter: 'blur(16px) saturate(1.2)',
-          border: '0.5px solid rgba(255, 255, 255, 0.12)',
+          border: focused ? '0.5px solid var(--border-focus)' : '0.5px solid rgba(255, 255, 255, 0.12)',
+          transition: 'border-color 0.2s ease',
         }}
       >
         <InputBar
@@ -51,6 +55,8 @@ export default function IdleView({
           onSubmit={onSubmit}
           autoFocus
           placeholder="Ask anything..."
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
         <div style={{ width: '0.5px', height: 18, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
         <ModelSelector models={models} selected={model} onSelect={onModelSelect} />
@@ -59,7 +65,7 @@ export default function IdleView({
 
       {/* Hint */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.18)' }}>
+        <span style={{ fontSize: 8, color: 'var(--text-tertiary)' }}>
           Enter to send · Esc to close
         </span>
       </div>

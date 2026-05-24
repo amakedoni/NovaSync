@@ -29,7 +29,7 @@ export default function ConversationView({ isThinking, onCopy, onRetry, onFollow
           display: 'flex',
           justifyContent: 'center',
         }}>
-          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)' }}>generating...</span>
+          <span style={{ fontSize: 9, color: 'var(--text-tertiary)' }}>generating...</span>
         </div>
       )}
 

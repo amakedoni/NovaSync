@@ -7,9 +7,11 @@ interface Props {
   disabled?: boolean;
   autoFocus?: boolean;
   placeholder?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
-export default function InputBar({ value, onChange, onSubmit, disabled, autoFocus, placeholder = 'Ask anything...' }: Props) {
+export default function InputBar({ value, onChange, onSubmit, disabled, autoFocus, placeholder = 'Ask anything...', onFocus, onBlur }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -34,6 +36,8 @@ export default function InputBar({ value, onChange, onSubmit, disabled, autoFocu
       disabled={disabled}
       autoFocus={autoFocus}
       spellCheck={false}
+      onFocus={onFocus}
+      onBlur={onBlur}
       style={{
         flex: 1,
         minWidth: 0,

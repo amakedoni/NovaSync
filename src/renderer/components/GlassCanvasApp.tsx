@@ -79,12 +79,12 @@ export default function GlassCanvasApp() {
     prevStateRef.current = state;
 
     if (state === 'empty') {
-      window.electronAPI?.resizeChat?.(480, 85);
+      window.electronAPI?.resizeChat?.(520, 180);
       return;
     }
 
     if (prev === 'empty') {
-      window.electronAPI?.resizeChat?.(480, 300);
+      window.electronAPI?.resizeChat?.(520, 320);
     }
   }, [state]);
 
@@ -103,7 +103,7 @@ export default function GlassCanvasApp() {
       if (contentH > currentH) {
         const stepH = Math.min(currentH + 40, contentH + 20, maxH);
         if (stepH > currentH + 10) {
-          window.electronAPI?.resizeChat?.(480, stepH);
+          window.electronAPI?.resizeChat?.(520, stepH);
         }
       }
     });
@@ -120,7 +120,7 @@ export default function GlassCanvasApp() {
       if (!root) return;
       const contentH = root.scrollHeight;
       const maxH = Math.round(window.screen.availHeight * 0.75);
-      window.electronAPI?.resizeChat?.(480, Math.min(contentH + 40, maxH));
+      window.electronAPI?.resizeChat?.(520, Math.min(contentH + 40, maxH));
     });
   }, [state]);
 
@@ -164,7 +164,11 @@ export default function GlassCanvasApp() {
 
   // ── API key setup ──
   if (needsKey) {
-    return <SettingsView onSaved={() => setNeedsKey(false)} />;
+    return (
+      <WindowShell visible={visible}>
+        <SettingsView onSaved={() => setNeedsKey(false)} />
+      </WindowShell>
+    );
   }
 
   return (
@@ -181,12 +185,13 @@ export default function GlassCanvasApp() {
           />
 
           {/* ── Content area with morph transitions ── */}
+          <motion.div layout style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <AnimatePresence mode="wait">
             {state === 'empty' && (
               <motion.div
                 key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ ...morphSpring, duration: undefined }}
                 style={{ willChange: 'transform, opacity' }}
@@ -234,6 +239,7 @@ export default function GlassCanvasApp() {
               </motion.div>
             )}
           </AnimatePresence>
+          </motion.div>
 
           {/* Error with conversation — retry/new chat buttons */}
           {showError && hasConversation && (

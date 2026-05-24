@@ -15,25 +15,28 @@ function formatTime(ts: number): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
+const msgSpring = { type: 'spring' as const, stiffness: 340, damping: 28 };
+
 export default function UserMessage({ content, timestamp }: Props) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0, y: 6, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ ...msgSpring, duration: undefined }}
       layout
       style={{ display: 'flex', justifyContent: 'flex-end' }}
     >
-      <div style={{ maxWidth: '85%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+      <div style={{ maxWidth: '80%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
         <div style={{
-          padding: '8px 14px', fontSize: 12, lineHeight: 1.6,
-          background: 'linear-gradient(135deg, rgba(90,200,250,0.12), rgba(90,200,250,0.05))',
-          border: '0.5px solid rgba(90,200,250,0.08)',
-          color: 'var(--text-primary)', borderRadius: '16px 16px 4px 16px', wordBreak: 'break-word',
+          padding: '10px 14px', fontSize: 13, lineHeight: 1.5,
+          background: 'var(--surface-hover)',
+          color: 'var(--text-primary)',
+          borderRadius: '10px 10px 2px 10px',
+          wordBreak: 'break-word',
         }}>
           {content}
         </div>
-        <span style={{ color: 'var(--text-tertiary)', fontSize: 9, padding: '0 4px' }}>
+        <span style={{ color: 'var(--text-muted)', fontSize: 9, padding: '0 4px' }}>
           {formatTime(timestamp)}
         </span>
       </div>

@@ -46,20 +46,32 @@ export default function IdleView({
         N
       </div>
 
-      {/* Input */}
-      <InputBar
-        value={query}
-        onChange={onQueryChange}
-        onSubmit={onSubmit}
-        autoFocus
-        placeholder="Ask anything..."
-      />
+      {/* Input row — bordered container */}
+      <div style={{
+        flex: 1,
+        minWidth: 0,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '0 8px 0 14px',
+        borderRadius: 'var(--radius-input)',
+        background: 'var(--surface-subtle)',
+        border: '1px solid var(--border-input)',
+      }}>
+        <InputBar
+          value={query}
+          onChange={onQueryChange}
+          onSubmit={onSubmit}
+          autoFocus
+          placeholder="Ask anything..."
+        />
 
-      {/* Model pill */}
-      <ModelSelector models={models} selected={model} onSelect={onModelSelect} />
+        {/* Model pill */}
+        <ModelSelector models={models} selected={model} onSelect={onModelSelect} />
 
-      {/* Mode pill */}
-      <ModeSelector selected={mode} onSelect={onModeSelect} />
+        {/* Mode pill */}
+        <ModeSelector selected={mode} onSelect={onModeSelect} />
+      </div>
     </div>
   );
 }

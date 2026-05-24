@@ -67,25 +67,21 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
 
   const isAccent = variant === 'accent';
   const triggerStyle: React.CSSProperties = useMemo(() => ({
-    height: 30,
-    padding: '0 10px',
+    height: 26,
+    padding: '0 8px',
     borderRadius: 'var(--radius-pill)',
-    background: open
-      ? (isAccent ? 'rgba(90,200,250,0.14)' : 'var(--surface-active)')
-      : (isAccent ? 'rgba(90,200,250,0.08)' : 'var(--surface-hover)'),
-    border: isAccent
-      ? '0.5px solid rgba(90,200,250,0.18)'
-      : '0.5px solid var(--border-input)',
+    background: open ? 'var(--surface-active)' : 'var(--surface-subtle)',
+    border: 'none',
     display: 'flex',
     alignItems: 'center',
     gap: 4,
     cursor: 'pointer',
     fontFamily: 'inherit',
     fontSize: 10,
-    fontWeight: isAccent ? 500 : undefined,
-    color: isAccent ? 'var(--accent)' : 'var(--text-secondary)',
+    fontWeight: 500,
+    color: isAccent ? 'var(--accent)' : (open ? 'var(--text-secondary)' : 'var(--text-tertiary)'),
     whiteSpace: 'nowrap',
-    transition: 'background 0.15s ease, border-color 0.15s ease',
+    transition: 'background 0.15s ease, color 0.15s ease',
     flexShrink: 0,
   }), [open, isAccent]);
 
@@ -94,13 +90,11 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
     top: 'calc(100% + 6px)',
     ...(side === 'right' ? { right: 0 } : { left: 0 }),
     minWidth: 155,
-    borderRadius: 14,
+    borderRadius: 8,
     padding: 4,
-    background: 'rgba(44, 44, 46, 0.85)',
-    border: '0.5px solid rgba(255, 255, 255, 0.12)',
-    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04) inset',
-    backdropFilter: 'blur(20px) saturate(1.2)',
-    WebkitBackdropFilter: 'blur(20px) saturate(1.2)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-input)',
+    boxShadow: 'var(--shadow-dropdown)',
     zIndex: 9999,
   }), [side]);
 
@@ -109,7 +103,7 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
     width: '100%',
     textAlign: 'left',
     padding: '8px 12px',
-    borderRadius: 10,
+    borderRadius: 6,
     fontSize: 11,
     border: 'none',
     cursor: 'pointer',
@@ -198,8 +192,8 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
                     ...itemBase,
                     color: isSelected ? 'var(--accent)' : 'var(--text-primary)',
                     background: isFocused
-                      ? (isSelected ? 'rgba(90, 200, 250, 0.12)' : 'var(--surface-hover)')
-                      : (isSelected ? 'rgba(90, 200, 250, 0.08)' : 'transparent'),
+                      ? (isSelected ? 'rgba(77, 156, 248, 0.12)' : 'var(--surface-hover)')
+                      : (isSelected ? 'var(--accent-subtle)' : 'transparent'),
                   }}
                   onMouseEnter={isSelected ? undefined : handleItemMouseEnter}
                   onMouseLeave={handleItemMouseLeave}
@@ -214,7 +208,6 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
                         height: 4,
                         borderRadius: '50%',
                         background: 'var(--accent)',
-                        boxShadow: '0 0 4px var(--accent-glow)',
                         verticalAlign: 'middle',
                       }} />
                     )}

@@ -52,8 +52,7 @@ export default function SettingsView({ onSaved }: Props) {
         <div
           style={{
             width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-            background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
-            boxShadow: '0 0 8px var(--accent-glow)',
+            background: 'var(--accent)',
           }}
         />
         <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent)' }}>Setup</span>
@@ -77,7 +76,7 @@ export default function SettingsView({ onSaved }: Props) {
               onClick={() => { setProvider(p.id); setError(''); }}
               style={{
                 flex: 1, padding: '6px 0', borderRadius: 12, fontSize: 10, fontWeight: 600,
-                border: '0.5px solid',
+                border: '1px solid',
                 cursor: 'pointer', fontFamily: 'inherit',
                 background: p.id === provider ? 'var(--surface-active)' : 'var(--surface-hover)',
                 borderColor: p.id === provider ? 'var(--border-focus)' : 'var(--border-subtle)',
@@ -147,11 +146,10 @@ export default function SettingsView({ onSaved }: Props) {
         onClick={handleSave}
         disabled={!apiKey.trim() || saving}
         style={{
-          width: '100%', padding: '10px 0', borderRadius: 20, fontSize: 13, fontWeight: 600,
+          width: '100%', padding: '10px 0', borderRadius: 6, fontSize: 13, fontWeight: 600,
           border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-          background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
-          boxShadow: '0 0 16px var(--accent-glow)',
-          color: '#fff',
+          background: 'var(--accent)',
+          color: 'var(--bg-deep)',
           opacity: !apiKey.trim() || saving ? 0.4 : 1,
         }}
       >

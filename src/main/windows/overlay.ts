@@ -17,6 +17,7 @@ export function createChatWindow(): BrowserWindow {
     minHeight: 80,
     transparent: false,
     frame: false,
+    roundedCorners: true,
     resizable: true,
     alwaysOnTop: true,
     skipTaskbar: true,

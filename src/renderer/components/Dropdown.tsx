@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface DropdownProps {
@@ -14,12 +15,32 @@ const spring = { type: 'spring' as const, stiffness: 200, damping: 24 };
 function Dropdown({ items, selected, onSelect, side = 'right', variant = 'default' }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [focusIndex, setFocusIndex] = useState(0);
+  const [menuPos, setMenuPos] = useState<{ top: number; left?: number; right?: number; maxHeight: number }>({ top: 0, maxHeight: 300 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
     setFocusIndex(Math.max(0, items.findIndex((i) => i.id === selected)));
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const menuHeight = Math.min(items.length * 32 + 8, 220);
+      const spaceBelow = window.innerHeight - rect.bottom - 6;
+      const spaceAbove = rect.top - 6;
+
+      // Open upward if not enough space below and more space above
+      const openUpward = spaceBelow < menuHeight && spaceAbove > spaceBelow;
+
+      setMenuPos({
+        top: openUpward ? rect.top - 6 : rect.bottom + 6,
+        left: side === 'right' ? undefined : rect.left,
+        right: side === 'right' ? window.innerWidth - rect.right : undefined,
+        maxHeight: Math.min(openUpward ? spaceAbove : spaceBelow, 220),
+      });
+    }
     const handler = (e: MouseEvent) => {
+      // ignore clicks on the trigger button itself (handled by its own onClick)
+      if (triggerRef.current?.contains(e.target as Node)) return;
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
@@ -64,6 +85,7 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
   }, [open, items, selected, onSelect, focusIndex]);
 
   const current = items.find((i) => i.id === selected);
+  const opensUpward = menuPos.top < (triggerRef.current?.getBoundingClientRect().bottom ?? 0);
 
   const isAccent = variant === 'accent';
   const triggerStyle: React.CSSProperties = useMemo(() => ({
@@ -86,17 +108,20 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
   }), [open, isAccent]);
 
   const menuStyle: React.CSSProperties = useMemo(() => ({
-    position: 'absolute',
-    top: 'calc(100% + 6px)',
-    ...(side === 'right' ? { right: 0 } : { left: 0 }),
+    position: 'fixed',
+    top: menuPos.top,
+    left: menuPos.left,
+    right: menuPos.right,
     minWidth: 155,
+    maxHeight: menuPos.maxHeight,
+    overflowY: 'auto' as const,
     borderRadius: 8,
     padding: 4,
     background: 'var(--bg-secondary)',
     border: '1px solid var(--border-input)',
     boxShadow: 'var(--shadow-dropdown)',
     zIndex: 9999,
-  }), [side]);
+  }), [menuPos]);
 
   const itemBase: React.CSSProperties = useMemo(() => ({
     display: 'block',
@@ -148,6 +173,7 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
   return (
     <div ref={containerRef} style={{ position: 'relative' }}>
       <button
+        ref={triggerRef}
         onClick={() => setOpen(!open)}
         style={triggerStyle}
         aria-expanded={open}
@@ -168,57 +194,60 @@ function Dropdown({ items, selected, onSelect, side = 'right', variant = 'defaul
         </motion.svg>
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -2 }}
-            transition={spring}
-            style={menuStyle}
-            role="listbox"
-            aria-label={`${current?.label || selected} options`}
-          >
-            {items.map((item, idx) => {
-              const isSelected = item.id === selected;
-              const isFocused = idx === focusIndex;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => { onSelect(item.id); setOpen(false); }}
-                  role="option"
-                  aria-selected={isSelected}
-                  style={{
-                    ...itemBase,
-                    color: isSelected ? 'var(--accent)' : 'var(--text-primary)',
-                    background: isFocused
-                      ? (isSelected ? 'rgba(77, 156, 248, 0.12)' : 'var(--surface-hover)')
-                      : (isSelected ? 'var(--accent-subtle)' : 'transparent'),
-                  }}
-                  onMouseEnter={isSelected ? undefined : handleItemMouseEnter}
-                  onMouseLeave={handleItemMouseLeave}
-                  onMouseDown={handleItemMouseDown}
-                  onMouseUp={handleItemMouseUp}
-                >
-                  <span style={{ display: 'inline-block', width: 10, textAlign: 'center', marginRight: 6 }}>
-                    {isSelected && (
-                      <span style={{
-                        display: 'inline-block',
-                        width: 4,
-                        height: 4,
-                        borderRadius: '50%',
-                        background: 'var(--accent)',
-                        verticalAlign: 'middle',
-                      }} />
-                    )}
-                  </span>
-                  {item.label}
-                </button>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {createPortal(
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: opensUpward ? 4 : -4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: opensUpward ? 2 : -2 }}
+              transition={spring}
+              style={menuStyle}
+              role="listbox"
+              aria-label={`${current?.label || selected} options`}
+            >
+              {items.map((item, idx) => {
+                const isSelected = item.id === selected;
+                const isFocused = idx === focusIndex;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => { onSelect(item.id); setOpen(false); }}
+                    role="option"
+                    aria-selected={isSelected}
+                    style={{
+                      ...itemBase,
+                      color: isSelected ? 'var(--accent)' : 'var(--text-primary)',
+                      background: isFocused
+                        ? (isSelected ? 'rgba(77, 156, 248, 0.12)' : 'var(--surface-hover)')
+                        : (isSelected ? 'var(--accent-subtle)' : 'transparent'),
+                    }}
+                    onMouseEnter={isSelected ? undefined : handleItemMouseEnter}
+                    onMouseLeave={handleItemMouseLeave}
+                    onMouseDown={handleItemMouseDown}
+                    onMouseUp={handleItemMouseUp}
+                  >
+                    <span style={{ display: 'inline-block', width: 10, textAlign: 'center', marginRight: 6 }}>
+                      {isSelected && (
+                        <span style={{
+                          display: 'inline-block',
+                          width: 4,
+                          height: 4,
+                          borderRadius: '50%',
+                          background: 'var(--accent)',
+                          verticalAlign: 'middle',
+                        }} />
+                      )}
+                    </span>
+                    {item.label}
+                  </button>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

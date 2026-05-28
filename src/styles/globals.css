@@ -83,6 +83,7 @@ html, body, #root {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  border-radius: var(--radius-window);
   background: transparent;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   color: var(--text-primary);

@@ -7,6 +7,9 @@ interface Settings {
   defaultModel: string;
   launchOnStartup: boolean;
   autoReadClipboard: boolean;
+  rememberPosition: boolean;
+  windowX: number;
+  windowY: number;
 }
 
 interface HistoryEntry {
@@ -29,6 +32,9 @@ const defaults: StoreData = {
     defaultModel: 'deepseek-chat',
     launchOnStartup: false,
     autoReadClipboard: false,
+    rememberPosition: false,
+    windowX: 0,
+    windowY: 0,
   },
   apiKeys: {},
   history: [],
@@ -54,7 +60,7 @@ function writeStore(data: StoreData): void {
 // ── Settings ────────────────────────────────────────
 
 export function loadSettings(): Settings {
-  return readStore().settings;
+  return { ...defaults.settings, ...readStore().settings };
 }
 
 export function saveSettings(partial: Partial<Settings>): void {

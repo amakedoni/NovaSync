@@ -18,6 +18,11 @@
   --border-subtle: #242428;
   --border-input: #2a2a2e;
   --border-focus: rgba(232, 120, 74, 0.30);
+  --accent-cold: #22D3EE;
+  --accent-cold-strong: #0EA5E9;
+  --accent-cold-subtle: rgba(34, 211, 238, 0.10);
+  --accent-cold-glow: rgba(34, 211, 238, 0.15);
+  --border-window: rgba(34, 211, 238, 0.12);
   --surface-subtle: #222226;
   --surface-hover: #252528;
   --surface-active: #28282c;

@@ -70,7 +70,7 @@ export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onO
               exit={{ opacity: 0, scale: 0 }}
               transition={spring}
             >
-              <AppIcon size={34} />
+              <AppIcon size={28} isGenerating={state === 'streaming'} />
             </motion.div>
             <motion.span
               initial={{ opacity: 0, x: -6 }}

@@ -83,7 +83,7 @@ export function showChatWindow(): void {
   if (!chatWindow) return;
 
   const s = loadSettings();
-  if (s.rememberPosition && s.windowX !== 0 && s.windowY !== 0) {
+  if (s.rememberPosition) {
     chatWindow.setPosition(s.windowX, s.windowY);
   } else {
     const [w, h] = chatWindow.getSize();
@@ -102,6 +102,6 @@ export function hideChatWindow(): void {
 
 export function resizeChatWindow(width: number, height: number): void {
   if (chatWindow && !chatWindow.isDestroyed()) {
-    chatWindow.setBounds({ width, height });
+    chatWindow.setSize(width, height);
   }
 }

@@ -63,7 +63,6 @@ export function createChatWindow(): BrowserWindow {
   });
 
   chatWindow.on('blur', () => {
-    console.log('[overlay] blur fired');
     chatWindow?.hide();
   });
 

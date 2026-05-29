@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import AppIcon from './AppIcon';
 
 interface Props {
   state: 'idle' | 'streaming' | 'done' | 'error';
@@ -26,7 +27,8 @@ const btnBase: React.CSSProperties = {
   fontFamily: 'inherit',
   flexShrink: 0,
   transition: 'background 0.15s ease, color 0.15s ease',
-};
+  WebkitAppRegion: 'no-drag',
+} as React.CSSProperties;
 
 export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onOpenHistory, onOpenSettings, onClose }: Props) {
   const showBranding = state !== 'idle';
@@ -43,7 +45,8 @@ export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onO
         position: 'relative',
         zIndex: 1,
         minHeight: showBranding ? 46 : 10,
-      }}
+        WebkitAppRegion: 'drag',
+      } as React.CSSProperties}
     >
       {/* Drag handle — idle only */}
       {!showBranding && (
@@ -60,27 +63,14 @@ export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onO
             transition={{ duration: 0.15 }}
             style={{ display: 'flex', alignItems: 'center', gap: 10 }}
           >
-            {/* Logo — orange filled */}
+            {/* Logo */}
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
               transition={spring}
-              style={{
-                width: 20,
-                height: 20,
-                borderRadius: 5,
-                flexShrink: 0,
-                background: 'var(--accent)',
-                color: 'var(--bg-deep)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 9,
-                fontWeight: 700,
-              }}
             >
-              N
+              <AppIcon size={34} />
             </motion.div>
             <motion.span
               initial={{ opacity: 0, x: -6 }}
@@ -111,10 +101,10 @@ export default function HeaderBar({ state, modelLabel, modeLabel, onNewChat, onO
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ delay: 0.1 }}
-                style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: 'var(--accent)', fontWeight: 500 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: 'var(--accent-cold)', fontWeight: 500 }}
               >
                 <span style={{
-                  width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)',
+                  width: 5, height: 5, borderRadius: '50%', background: 'var(--accent-cold)',
                   animation: 'breathe-cursor 1.5s ease-in-out infinite',
                 }} />
                 streaming

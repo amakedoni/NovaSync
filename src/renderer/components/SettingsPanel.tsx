@@ -8,6 +8,7 @@ interface Settings {
   defaultModel: string;
   launchOnStartup: boolean;
   autoReadClipboard: boolean;
+  rememberPosition: boolean;
 }
 
 const TABS: { id: Tab; label: string }[] = [
@@ -100,6 +101,7 @@ export default function SettingsPanel() {
     defaultModel: 'deepseek-chat',
     launchOnStartup: false,
     autoReadClipboard: false,
+    rememberPosition: false,
   });
   const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
   const [keyInputs, setKeyInputs] = useState<Record<string, string>>({});
@@ -110,14 +112,20 @@ export default function SettingsPanel() {
   useEffect(() => {
     (async () => {
       const s = await window.electronAPI?.getSettings();
-      if (s) setSettings({ hotkey: s.hotkey as string, defaultModel: (s.defaultModel as string) || 'deepseek-chat', launchOnStartup: Boolean(s.launchOnStartup), autoReadClipboard: Boolean(s.autoReadClipboard) });
+      if (s) setSettings({
+        hotkey: s.hotkey as string,
+        defaultModel: (s.defaultModel as string) || 'deepseek-chat',
+        launchOnStartup: Boolean(s.launchOnStartup),
+        autoReadClipboard: Boolean(s.autoReadClipboard),
+        rememberPosition: Boolean(s.rememberPosition),
+      });
       const keys = await window.electronAPI?.getApiKeys();
       if (keys) setApiKeys(keys);
       setLoaded(true);
     })();
   }, []);
 
-  const handleToggle = async (key: 'launchOnStartup' | 'autoReadClipboard') => {
+  const handleToggle = async (key: 'launchOnStartup' | 'autoReadClipboard' | 'rememberPosition') => {
     const next = { ...settings, [key]: !settings[key] };
     setSettings(next);
     await window.electronAPI?.saveSettings(next as unknown as Record<string, unknown>);
@@ -234,6 +242,25 @@ export default function SettingsPanel() {
                 </span>
                 <button onClick={() => handleToggle('autoReadClipboard')} style={toggleTrack(settings.autoReadClipboard)} aria-label="Toggle auto-read clipboard" role="switch" aria-checked={settings.autoReadClipboard}>
                   <div style={toggleKnob(settings.autoReadClipboard)} />
+                </button>
+              </div>
+            </div>
+
+            {/* Remember position */}
+            <div style={fieldset}>
+              <label style={labelStyle}>Window Position</label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+                  Remember position between sessions
+                </span>
+                <button
+                  onClick={() => handleToggle('rememberPosition')}
+                  style={toggleTrack(settings.rememberPosition)}
+                  aria-label="Toggle remember position"
+                  role="switch"
+                  aria-checked={settings.rememberPosition}
+                >
+                  <div style={toggleKnob(settings.rememberPosition)} />
                 </button>
               </div>
             </div>

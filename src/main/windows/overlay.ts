@@ -1,7 +1,17 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, app, screen } from 'electron';
 import path from 'path';
+import { loadSettings, saveSettings } from '../store/settings';
 
 let chatWindow: BrowserWindow | null = null;
+
+const WINDOW_WIDTH = 520;
+const WINDOW_MARGIN = 20;
+
+function getIconPath(): string {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, 'icon.png')
+    : path.join(__dirname, '../../../resources/icon.png');
+}
 
 function getUrl(): string {
   const devUrl = process.env.ELECTRON_RENDERER_URL;
@@ -9,10 +19,23 @@ function getUrl(): string {
   return `file://${path.join(__dirname, '../renderer/index.html')}`;
 }
 
+function getBottomRightPosition(windowWidth: number, windowHeight: number): { x: number; y: number } {
+  const { workArea } = screen.getPrimaryDisplay();
+  return {
+    x: workArea.x + workArea.width - windowWidth - WINDOW_MARGIN,
+    y: workArea.y + workArea.height - windowHeight - WINDOW_MARGIN,
+  };
+}
+
 export function createChatWindow(): BrowserWindow {
+  const { x, y } = getBottomRightPosition(WINDOW_WIDTH, 80);
+
   chatWindow = new BrowserWindow({
-    width: 520,
+    x,
+    y,
+    width: WINDOW_WIDTH,
     height: 80,
+    icon: getIconPath(),
     minWidth: 360,
     minHeight: 80,
     transparent: false,
@@ -39,6 +62,17 @@ export function createChatWindow(): BrowserWindow {
     chatWindow?.hide();
   });
 
+  chatWindow.on('blur', () => {
+    console.log('[overlay] blur fired');
+    chatWindow?.hide();
+  });
+
+  chatWindow.on('moved', () => {
+    if (!chatWindow || chatWindow.isDestroyed()) return;
+    const [wx, wy] = chatWindow.getPosition();
+    saveSettings({ windowX: wx, windowY: wy });
+  });
+
   return chatWindow;
 }
 
@@ -47,11 +81,20 @@ export function getChatWindow(): BrowserWindow | null {
 }
 
 export function showChatWindow(): void {
-  if (chatWindow) {
-    chatWindow.show();
-    chatWindow.focus();
-    chatWindow.webContents.send('chat:opened');
+  if (!chatWindow) return;
+
+  const s = loadSettings();
+  if (s.rememberPosition && s.windowX !== 0 && s.windowY !== 0) {
+    chatWindow.setPosition(s.windowX, s.windowY);
+  } else {
+    const [w, h] = chatWindow.getSize();
+    const { x, y } = getBottomRightPosition(w, h);
+    chatWindow.setPosition(x, y);
   }
+
+  chatWindow.show();
+  chatWindow.focus();
+  chatWindow.webContents.send('chat:opened');
 }
 
 export function hideChatWindow(): void {

@@ -126,6 +126,16 @@ export default function GlassCanvasApp() {
     });
   }, [state]);
 
+  // ── Hide on blur (click outside) ──
+  useEffect(() => {
+    const handleBlur = () => {
+      setVisible(false);
+      setTimeout(() => window.electronAPI?.hideChat?.(), 150);
+    };
+    window.addEventListener('blur', handleBlur);
+    return () => window.removeEventListener('blur', handleBlur);
+  }, []);
+
   // ── Keyboard ──
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -167,7 +177,7 @@ export default function GlassCanvasApp() {
   // ── API key setup ──
   if (needsKey) {
     return (
-      <WindowShell visible={visible}>
+      <WindowShell visible={visible} streaming={false}>
         <SettingsView onSaved={() => setNeedsKey(false)} />
       </WindowShell>
     );
@@ -176,7 +186,7 @@ export default function GlassCanvasApp() {
   return (
     <AnimatePresence>
       {visible && (
-        <WindowShell visible={visible}>
+        <WindowShell visible={visible} streaming={state === 'streaming'}>
           <HeaderBar
             state={headerState}
             modelLabel={currentModelLabel}
@@ -213,7 +223,7 @@ export default function GlassCanvasApp() {
           )}
 
           {/* Content area */}
-          <motion.div layout style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <AnimatePresence mode="wait">
             {state === 'empty' && (
               <motion.div
@@ -266,7 +276,7 @@ export default function GlassCanvasApp() {
               </motion.div>
             )}
           </AnimatePresence>
-          </motion.div>
+          </div>
 
           {/* Error with conversation — retry/new chat */}
           {showError && hasConversation && (
